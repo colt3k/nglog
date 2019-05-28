@@ -71,7 +71,7 @@
     Text
     JSON    
         
-# Coming Soon    
+# Coming    
    
 ## Appenders    
     - mailer SMTP
