@@ -90,5 +90,5 @@
         - filter ability for routing events to log appenders
         - direct to file, skip StdOut/StdErr
         
-    
-##### originally influenced by logrus and other great loggers
+## Influencers    
+originally influenced by logrus and other great loggers
