@@ -91,4 +91,4 @@
         - direct to file, skip StdOut/StdErr
         
     
-### originally influenced by logrus and other great loggers
+##### originally influenced by logrus and other great loggers
