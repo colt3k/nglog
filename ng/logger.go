@@ -17,6 +17,7 @@ const DefaultTimestampFormat = time.RFC3339
 var (
 	once  ResyncOnce
 	std   = NewLogger()
+	DEBUGX2 = enum.DEBUGX2
 	DEBUG = enum.DEBUG
 	FATAL = enum.FATAL
 	ERROR = enum.ERROR
@@ -37,6 +38,7 @@ type StdLogger struct {
 	ColorWARN    string
 	ColorINFO    string
 	ColorDEBUG   string
+	ColorDEBUGX2 string
 	// Reusable empty entry
 	entryPool sync.Pool
 	// Used to sync writing to the log. Locking is enabled by Default
@@ -61,6 +63,7 @@ func NewLogger(opts ...LogOption) *StdLogger {
 		t.ColorWARN = ColorFmt(FgYellow)
 		t.ColorINFO = ColorFmt(FgBlue)
 		t.ColorDEBUG = t.ColorDEFAULT
+		t.ColorDEBUGX2 = t.ColorDEFAULT
 		t.depth = 5 //Default how deep to go in order to find caller
 		for _, opt := range opts {
 			opt(t)
@@ -110,6 +113,12 @@ func Modify(opts ...LogOption) {
 func Logger() *StdLogger {
 	return std
 }
+func DebugX2ln(args ...interface{}) {
+	Logln(enum.DEBUGX2, args...)
+}
+func DebugX2(format string, args ...interface{}) {
+	Logf(enum.DEBUGX2, format, args...)
+}
 func Debugln(args ...interface{}) {
 	Logln(enum.DEBUG, args...)
 }
@@ -144,6 +153,9 @@ func Flags() int {
 
 func Level() enum.LogLevel {
 	return std.Level()
+}
+func IsDebugX2() bool {
+	return std.Level() == enum.DEBUGX2
 }
 func IsDebug() bool {
 	return std.Level() == enum.DEBUG
@@ -199,6 +211,7 @@ func (l *StdLogger) ShowOptions() {
 	buf.WriteString(" WarnColor:" + l.ColorWARN)
 	buf.WriteString(" InfoColor:" + l.ColorINFO)
 	buf.WriteString(" DebugColor:" + l.ColorDEBUG)
+	buf.WriteString(" DebugX2Color:" + l.ColorDEBUGX2)
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.DEBUG, "", l.Caller(), false, buf.String())
 	l.releaseEntry(entry)
@@ -319,6 +332,12 @@ func (l *StdLogger) Logln(lvl enum.LogLevel, args ...interface{}) {
 			entry.LogEnt(lvl, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
+	case enum.DEBUGX2:
+		if l.level >= enum.DEBUGX2 {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			l.releaseEntry(entry)
+		}
 	default:
 		entry := l.newEntry(false)
 		entry.LogEnt(lvl, "", l.Caller(), true, args...)
@@ -362,6 +381,12 @@ func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) 
 		}
 	case enum.DEBUG:
 		if l.level >= enum.DEBUG {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			l.releaseEntry(entry)
+		}
+	case enum.DEBUGX2:
+		if l.level >= enum.DEBUGX2 {
 			entry := l.newEntry(false)
 			entry.LogEnt(lvl, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)

@@ -12,10 +12,11 @@ const (
 	WARN
 	INFO
 	DEBUG
+	DEBUGX2
 )
 
 var loglevel = [...]string{
-	"NONE", "FATAL", "ERROR", "WARN", "INFO", "DEBUG",
+	"NONE", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "DEBUGX2",
 }
 
 func (l LogLevel) String() string {

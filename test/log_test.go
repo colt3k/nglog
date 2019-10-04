@@ -5,9 +5,11 @@ Test project
 */
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 	"testing"
 
+	"github.com/colt3k/nglog/ers/bserr"
 	"github.com/colt3k/nglog/internal/pkg/util"
 	log "github.com/colt3k/nglog/ng"
 )
@@ -78,4 +80,8 @@ func TestLogFile(t *testing.T) {
 	log.Logln(log.WARN, "Logln wrn msg")
 	log.Logln(log.DEBUG, "Logln ftl msg")
 	log.Logln(log.FATAL, "---LAST LINE OF TEST---")
+}
+
+func TestErrStacks(t *testing.T) {
+	bserr.StopErr(fmt.Errorf("some error one"), nil...)
 }

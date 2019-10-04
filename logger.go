@@ -8,7 +8,7 @@ import (
 	"github.com/colt3k/nglog/ng"
 )
 
-//go:generate enumeration -pkg enum -type LogLevel -list NONE,FATAL,ERROR,WARN,INFO,DEBUG
+//go:generate enumeration -pkg enum -type LogLevel -list NONE,FATAL,ERROR,WARN,INFO,DEBUG,DEBUGX2
 //go:generate enumeration -pkg enum -type Flags -list Ldate,Ltime,Lmicroseconds,Llongfile,Lshortfile,LUTC,LstdFlags -listval shift
 
 type Logger interface {

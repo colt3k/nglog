@@ -112,6 +112,8 @@ func (f *TextLayout) printColored(b *bytes.Buffer, entry *LogMsg, keys []Fields,
 	var levelColorOption string
 
 	switch entry.Level {
+	case enum.DEBUGX2:
+		levelColorOption = entry.Logger.ColorDEBUGX2
 	case enum.DEBUG:
 		levelColorOption = entry.Logger.ColorDEBUG
 	case enum.INFO:

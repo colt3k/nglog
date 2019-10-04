@@ -58,6 +58,7 @@ func ColorsOn() LogOption {
 		lgr.ColorWARN = ColorFmt(FgYellow)
 		lgr.ColorINFO = ColorFmt(FgBlue)
 		lgr.ColorDEBUG = std.ColorDEFAULT
+		lgr.ColorDEBUGX2 = std.ColorDEFAULT
 	}
 }
 
@@ -68,6 +69,7 @@ func HiColorsOn() LogOption {
 		lgr.ColorWARN = ColorBrightFmt(HiYELLOW)
 		lgr.ColorINFO = ColorBrightFmt(HiBLUE)
 		lgr.ColorDEBUG = std.ColorDEFAULT
+		lgr.ColorDEBUGX2 = std.ColorDEFAULT
 	}
 }
 
