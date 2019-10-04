@@ -120,7 +120,7 @@ func (er *BSErr) NotErrSkipTrace(e error, skipTrace bool, msg ...string) bool {
 
 //StopErr check for error, output message if one is passed in and stop execution
 func (er *BSErr) StopErr(e error, msg ...string) {
-	if e != nil && msg == nil {
+	if e != nil {
 
 		log.DisableTimestamp()
 		errStack := er.findIssue()
@@ -131,10 +131,12 @@ func (er *BSErr) StopErr(e error, msg ...string) {
 			flds = append(flds, fldsTmp)
 		}
 		entry := log.WithFields(flds)
-		entry.Fatal(e)
+		if len(msg) > 0 {
+			entry.Fatal(msg[0], e)
+		} else {
+			entry.Fatal(e)
+		}
 		log.EnableTimestamp()
-	} else if e != nil && len(msg) > 0 {
-		log.Logln(log.FATAL, msg, e)
 	}
 }
 
