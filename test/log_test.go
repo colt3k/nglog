@@ -25,7 +25,7 @@ func Test(t *testing.T) {
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca, fa))
+	log.Modify(log.LogLevel(log.DEBUGX2), log.ColorsOn(), log.Appenders(ca, fa))
 
 	log.ShowConfig()
 	var val = "HelloWorld"
@@ -40,6 +40,7 @@ func Test(t *testing.T) {
 	log.Logf(log.INFO, "Logf Test some text %s %f", val, val2)
 	log.Logf(log.INFO, "Throw Error %v", errors.New("test1"))
 
+	log.Logln(log.DEBUGX2, "Logln X2")
 	log.Logln(log.DEBUG, "Logln Teest")
 	log.Logln(log.ERROR, "Logln Er")
 	log.Logln(log.INFO, "Logln inf o msg")
@@ -84,4 +85,35 @@ func TestLogFile(t *testing.T) {
 
 func TestErrStacks(t *testing.T) {
 	bserr.StopErr(fmt.Errorf("some error one"), nil...)
+}
+
+func TestJSON(t *testing.T) {
+	fa, err := log.NewFileAppender("*", "output.txt", "", 0)
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(ca, fa))
+
+	log.Logln(log.DEBUGX2, "Logln X2")
+	log.Logln(log.DEBUG, "Logln Teest")
+	log.Logln(log.ERROR, "Logln Er")
+	log.Logln(log.INFO, "Logln inf o msg")
+	log.Logln(log.WARN, "Logln wrn msg")
+	log.Logln(log.DEBUG, "Logln ftl msg")
+	log.Logln(log.FATAL, "---LAST LINE OF TEST---")
+}
+
+func TestMail(t *testing.T) {
+	ma, err := log.NewMailAppender("*", "my.mailserver.com", "youruser", "yourpass", "from@somewhere.com", "user@to.com", "Test message", 25)
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	tl := new(log.TextLayout)
+	tl.DisableColors = true
+	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(tl), log.Appenders(ca, ma))
+
+	log.Logln(log.DEBUG, "Mail Message")
+
 }

@@ -36,7 +36,7 @@
         log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
     }
     ca := log.NewConsoleAppender("*")
-    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(fa))
+    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(ca,fa))
     
 ### Setup Logging with Failover
 
@@ -74,12 +74,9 @@
 # Coming    
    
 ## Appenders    
-    - mailer SMTP
-    - file appender 
+    - mailer SMTP                                   : send per message?
     - storage (db, file, nosql(mongodb, couchdb))
-    - random access file
     - socket
-    - ssl
     - syslog (possibly in golang already)
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)
     - Rewrite
