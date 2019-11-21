@@ -2,7 +2,7 @@
 
 ## GOAL
 
-- Log4j equivalent for Go
+- to be a Log4j equivalent for Go
 
 # Logging
 
