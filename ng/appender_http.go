@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-//******************* File APPENDER ********************
+//******************* HTTP APPENDER ********************
 
 type Client struct {
 	httpClient            *http.Client
@@ -44,7 +44,7 @@ type HTTPAppender struct {
 
 func NewHTTPAppender(filter, url, username, password string) (*HTTPAppender, error) {
 	if len(url) == 0 {
-		return nil, fmt.Errorf("smtp server required")
+		return nil, fmt.Errorf("url required")
 	}
 	oa := newOutAppender(filter, "")
 	t := new(HTTPAppender)

@@ -82,11 +82,12 @@
         
 ### Appenders
 
-    Console
-    Failover
-    File
-    Mail
-    HTTP
+    - Console
+    - Failover
+    - File
+    - Mail
+    - HTTP
+    - TCP socket
     
 ### Layouts
 
@@ -96,7 +97,6 @@
 # Coming    
    
 ## Appenders
-    - socket    
     - storage (db, file, nosql(mongodb, couchdb))
     - syslog (possibly in golang already)
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)

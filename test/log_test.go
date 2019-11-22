@@ -131,3 +131,19 @@ func TestHTTP(t *testing.T) {
 	log.Logln(log.WARN, "Logln wrn msg")
 	log.Logln(log.DEBUG, "Logln ftl msg")
 }
+
+func TestTCPSocket(t *testing.T) {
+	ha, err := log.NewSocketAppender("*", "localhost", "9090")
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating socket appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)),log.Appenders(ca, ha))
+
+	log.Logln(log.DEBUGX2, "Logln X2")
+	log.Logln(log.DEBUG, "Logln Teest")
+	log.Logln(log.ERROR, "Logln Er")
+	log.Logln(log.INFO, "Logln inf o msg")
+	log.Logln(log.WARN, "Logln wrn msg")
+	log.Logln(log.DEBUG, "Logln ftl msg")
+}

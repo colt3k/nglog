@@ -9,7 +9,7 @@ import (
 	"github.com/go-mail/mail"
 )
 
-//******************* File APPENDER ********************
+//******************* Mail APPENDER ********************
 
 type MailAppender struct {
 	*OutAppender
