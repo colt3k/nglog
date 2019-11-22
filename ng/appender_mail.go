@@ -42,7 +42,7 @@ func NewMailAppender(filter, smtpServer, smtpUsername, smtpPass, smtpFrom, smtpT
 	t.smtpFrom = smtpFrom
 	t.smtpTo = smtpTo
 	t.smtpSubject = smtpSubject
-
+	t.disableColor = true
 	return t, nil
 }
 func (f *MailAppender) Name() string {

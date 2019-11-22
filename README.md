@@ -58,13 +58,35 @@
     }
     ca := log.NewConsoleAppender("*")
     fa := log.NewFailoverAppender(fileAp, []log.Appender{ca})
-    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(fa))    
+    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(fa))
     
+### Setup Logging with Mailer
+
+    ma, err := log.NewMailAppender("*", "my.mailserver.com", "youruser", "yourpass", "from@somewhere.com", "user@to.com", "Test message", 25)
+    if err != nil {
+        log.Logf(log.FATAL, "issue creating mail appender\n%+v", err)
+    }
+    ca := log.NewConsoleAppender("*")
+    tl := new(log.TextLayout)
+    tl.DisableColors = true
+    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(tl), log.Appenders(ca, ma))        
+    
+### Setup Logging with HTTP Appender using JSON
+
+    ha, err := log.NewHTTPAppender("*", "http://localhost:8080", "", "")
+    if err != nil {
+        log.Logf(log.FATAL, "issue creating http appender\n%+v", err)
+    }
+    ca := log.NewConsoleAppender("*")
+    log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(ca, ha))
+        
 ### Appenders
 
     Console
     Failover
     File
+    Mail
+    HTTP
     
 ### Layouts
 
@@ -73,14 +95,12 @@
         
 # Coming    
    
-## Appenders    
-    - mailer SMTP                                   : send per message?
+## Appenders
+    - socket    
     - storage (db, file, nosql(mongodb, couchdb))
-    - socket
     - syslog (possibly in golang already)
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)
     - Rewrite
-    - HTTP
     - JPA, JMS, Cassandra, Async
     - Console (default) StdOut can change to StdErr
         - Add template formatting ability
@@ -88,4 +108,4 @@
         - direct to file, skip StdOut/StdErr
         
 ## Influencers    
-originally influenced by logrus and other great loggers
+originally influenced by logrus, log4j and other great loggers

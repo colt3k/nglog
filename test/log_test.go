@@ -56,6 +56,7 @@ func TestRollingFileAppender(t *testing.T) {
 		"RollingFileAppender", -1, log.NewTimeTriggerPolicy(5, 1),
 		log.NewDefaultStrategy("", "log/", 1, 4, 9))
 }
+
 func TestLogFile(t *testing.T) {
 	var val = "HelloWorld"
 	var val2 = 0.456789
@@ -107,13 +108,26 @@ func TestJSON(t *testing.T) {
 func TestMail(t *testing.T) {
 	ma, err := log.NewMailAppender("*", "my.mailserver.com", "youruser", "yourpass", "from@somewhere.com", "user@to.com", "Test message", 25)
 	if err != nil {
-		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+		log.Logf(log.FATAL, "issue creating mail appender\n%+v", err)
 	}
 	ca := log.NewConsoleAppender("*")
-	tl := new(log.TextLayout)
-	tl.DisableColors = true
-	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(tl), log.Appenders(ca, ma))
+	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, ma))
 
 	log.Logln(log.DEBUG, "Mail Message")
+}
 
+func TestHTTP(t *testing.T) {
+	ha, err := log.NewHTTPAppender("*", "http://localhost:8080", "", "")
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating http appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)),log.Appenders(ca, ha))
+
+	log.Logln(log.DEBUGX2, "Logln X2")
+	log.Logln(log.DEBUG, "Logln Teest")
+	log.Logln(log.ERROR, "Logln Er")
+	log.Logln(log.INFO, "Logln inf o msg")
+	log.Logln(log.WARN, "Logln wrn msg")
+	log.Logln(log.DEBUG, "Logln ftl msg")
 }
