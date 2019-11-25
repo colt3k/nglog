@@ -107,7 +107,7 @@
 # Coming    
    
 ## Appenders
-    - storage (db, file, nosql(mongodb, couchdb))
+    - db storage (db, nosql(mongodb, couchdb))
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)
     - Rewrite
     - JPA, JMS, Cassandra, Async
