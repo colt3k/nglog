@@ -79,6 +79,15 @@
     }
     ca := log.NewConsoleAppender("*")
     log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.JSONLayout)), log.Appenders(ca, ha))
+
+### Setup Syslog Logging
+
+    sa, err := log.NewSyslogAppender("*", "myapp")
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating syslog appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, sa))
         
 ### Appenders
 
