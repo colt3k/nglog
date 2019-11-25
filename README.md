@@ -88,6 +88,7 @@
     - Mail
     - HTTP
     - TCP socket
+    - syslog
     
 ### Layouts
 
@@ -98,14 +99,9 @@
    
 ## Appenders
     - storage (db, file, nosql(mongodb, couchdb))
-    - syslog (possibly in golang already)
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)
     - Rewrite
     - JPA, JMS, Cassandra, Async
-    - Console (default) StdOut can change to StdErr
-        - Add template formatting ability
-        - filter ability for routing events to log appenders
-        - direct to file, skip StdOut/StdErr
         
 ## Influencers    
 originally influenced by logrus, log4j and other great loggers

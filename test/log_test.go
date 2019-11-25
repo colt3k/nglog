@@ -147,3 +147,21 @@ func TestTCPSocket(t *testing.T) {
 	log.Logln(log.WARN, "Logln wrn msg")
 	log.Logln(log.DEBUG, "Logln ftl msg")
 }
+
+func TestSyslog(t *testing.T) {
+
+	// MAC goes to /var/log/system.log
+	sa, err := log.NewSyslogAppender("*", "myapp")
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating syslog appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, sa))
+
+	log.Logln(log.DEBUGX2, "Logln X2")
+	log.Logln(log.DEBUG, "Logln Teest")
+	log.Logln(log.ERROR, "Logln Er")
+	log.Logln(log.INFO, "Logln inf o msg")
+	log.Logln(log.WARN, "Logln wrn msg")
+	log.Logln(log.DEBUG, "Logln ftl msg")
+}
