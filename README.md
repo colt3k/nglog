@@ -2,16 +2,9 @@
 
 ## GOAL
 
-- to be a Log4j equivalent for Go
+- become a full fledged logging solution for Go
 
 # Logging
-
-- If the log is just a record of something happening, if it could be aggregated, it's probably a metric (Prometheus).
-
-- If the log is something important, then it's not a log it's an alert. Send it by email, pagerduty, chat-ops, etc.
-
-- If the log is not something important then remove it.
-
 
 ### Setup Logging for project (Basic)
 
@@ -88,7 +81,16 @@
 	}
 	ca := log.NewConsoleAppender("*")
 	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, sa))
-        
+
+### Setup Logging with XML output
+
+    fa, err := log.NewFileAppender("*", "output.txt", "", 0)
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+	}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.Formatr(new(log.XMLLayout)), log.Appenders(ca, fa))
+	        
 ### Appenders
 
     - Console
@@ -103,10 +105,9 @@
 
     Text
     JSON    
+    XML
         
-# Coming    
-   
-## Appenders
+### Coming Appenders
     - db storage (db, nosql(mongodb, couchdb))
     - MQ Apps (ZeroMQ, JeroMQ, RabbitMQ)
     - Rewrite
