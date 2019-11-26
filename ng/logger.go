@@ -248,15 +248,6 @@ func (l *StdLogger) Caller() string {
 	return function
 }
 
-//func WithContext(context context.Context) *LogMsg {
-//	return std.WithContext(context)
-//}
-//func (l *StdLogger) WithContext(context context.Context) *LogMsg {
-//	entry := l.newEntry(true)
-//	defer l.releaseEntry(entry)
-//	return entry.WithFields(fields)
-//}
-
 // WithFields creates an entry from the standard logger and adds multiple
 // fields to it. This is simply a helper for `WithField`, invoking it
 // once for each field.
@@ -343,7 +334,6 @@ func (l *StdLogger) Logln(lvl enum.LogLevel, args ...interface{}) {
 		entry.LogEnt(lvl, "", l.Caller(), true, args...)
 		l.releaseEntry(entry)
 	}
-	//log.SetPrefix("")
 }
 
 func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) {
@@ -396,5 +386,4 @@ func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) 
 		entry.LogEnt(lvl, format, l.Caller(), false, args...)
 		l.releaseEntry(entry)
 	}
-	//log.SetPrefix("")
 }

@@ -10,8 +10,6 @@ type RollingFileAppender struct {
 	triggerPolicy TriggerPolicy // Triggering Policy to roll file
 	strategy      Strategy      // Strategy of archives
 	filePattern   string        // 	i.e. logs/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz
-
-	//Layout		default format "%m%n"
 }
 
 func NewRollingFileAppender(filter, fileName, name string, bufferSize int, trigger TriggerPolicy, strategy Strategy) (*RollingFileAppender,error) {

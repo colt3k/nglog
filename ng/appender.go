@@ -5,24 +5,7 @@ import (
 	"os"
 )
 
-/*
-
-Mail
-Storage
-RollingFile
-Socket
-SSL
-Syslog
-MQ
-Rewrite
-HTTP
-
------ DONE BELOW HERE
-Fail over wraps others to be used as a backup i.e. File and fail over to Console
-Console	(default)
-File
-*/
-
+// Appender
 type Appender interface {
 	Name() string
 	//package or name to find in message, in Java this was a package
@@ -36,7 +19,6 @@ type OutAppender struct {
 	Out          io.Writer
 	filter       string
 	disableColor bool
-	//Layout		default format "%m%n"
 }
 
 func newOutAppender(filter, name string) *OutAppender {

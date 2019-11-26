@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//******************* CONSOLE APPENDER ********************
+//******************* Syslog APPENDER ********************
 type SyslogAppender struct {
 	*OutAppender
 }
