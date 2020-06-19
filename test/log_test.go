@@ -4,6 +4,7 @@ package test
 Test project
 */
 import (
+	"compress/flate"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -52,9 +53,22 @@ func Test(t *testing.T) {
 
 func TestRollingFileAppender(t *testing.T) {
 
-	log.NewRollingFileAppender("*", filepath.Join(util.HomeFolder(), "roll_test.log"),
-		"RollingFileAppender", -1, log.NewTimeTriggerPolicy(5, 1),
-		log.NewDefaultStrategy("", "log/", 1, 4, 9))
+	rfa, err := log.NewRollingFileAppender("*", filepath.Join("logtest", "roll_test.log"),
+		"RollingFileAppender", -1, log.NewSizeTriggerPolicy(5, true),
+		log.NewDefaultStrategy(4, flate.BestCompression))
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating rolling file appender\n%+v", err)
+	}
+	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(rfa))
+
+	log.Logln(log.INFO, "12345")
+	log.Logln(log.INFO, "6789")
+	log.Logln(log.INFO, "9876")
+	log.Logln(log.INFO, "54321")
+	log.Logln(log.INFO, "2468")
+	log.Logln(log.INFO, "8642")
+	log.Logln(log.INFO, "139")
+	log.Logln(log.INFO, "931")
 }
 
 func TestLogFile(t *testing.T) {

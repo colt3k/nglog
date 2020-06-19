@@ -45,7 +45,15 @@ func (r *RollingFileAppender) Applicable(filter string) bool {
 // TODO add logging for rolling
 func (r *RollingFileAppender) Process(msg []byte) {
 	if r.triggerPolicy != nil {
-		r.triggerPolicy.Rotate(r.fileName)
+		b, err := r.triggerPolicy.Rotate(r.fileName, r.strategy)
+		if err != nil {
+			tmpMsg := fmt.Sprintf("issue rotating log file %v \n", err)
+			t := string(msg)
+			msg = []byte(tmpMsg+t)
+		}
+		if b {
+			// re-establish connection to new log file
+		}
 	}
 
 	if r.buffered {
