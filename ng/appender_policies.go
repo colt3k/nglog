@@ -144,7 +144,7 @@ func renameFiles(fileName string, max int) error {
 	}
 	sort.Sort(ByNumericalFilename(files))
 	for i,j := range files {
-		if i > max {
+		if i >= max {
 			err := os.Remove(path.Join(path.Dir(fileName), j.Name()))
 			if err != nil {
 				fmt.Printf("issue removing %v\n", err)
