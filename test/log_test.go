@@ -54,12 +54,13 @@ func Test(t *testing.T) {
 func TestRollingFileAppender(t *testing.T) {
 	ca := log.NewConsoleAppender("*")
 	rfa, err := log.NewRollingFileAppender("*", filepath.Join("logtest", "roll_test.log"),
-		"RollingFileAppender", -1, log.NewSizeTriggerPolicy(5, true),
+		"RollingFileAppender", -1, log.NewSizeTriggerPolicy(20, true),
 		log.NewDefaultStrategy(4, flate.BestCompression))
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating rolling file appender\n%+v", err)
 	}
 	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca, rfa))
+	_ = log.ShowAppenders()
 
 	log.Logln(log.INFO, "12345")
 	log.Logln(log.INFO, "6789")

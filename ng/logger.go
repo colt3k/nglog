@@ -110,6 +110,13 @@ func Modify(opts ...LogOption) {
 		opt(std)
 	}
 }
+func ShowAppenders() []string {
+	appendrs := make([]string,0)
+	for _,j := range std.appenders {
+		appendrs = append(appendrs, j.Name())
+	}
+	return appendrs
+}
 func Logger() *StdLogger {
 	return std
 }

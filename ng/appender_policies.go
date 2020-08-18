@@ -35,9 +35,9 @@ type TimeTriggerPolicy struct {
 	maxRandomDelay int // 0 no delay otherwise seconds to delay after interval
 }
 
-func NewSizeTriggerPolicy(maxsizeBytes int64, evalOnStart bool) *SizeTriggerPolicy {
+func NewSizeTriggerPolicy(maxsizeMB int64, evalOnStart bool) *SizeTriggerPolicy {
 	t := new(SizeTriggerPolicy)
-	t.maxSize = maxsizeBytes
+	t.maxSize = maxsizeMB * 1024 * 1024
 	t.evalOnStart = evalOnStart
 	return t
 }
