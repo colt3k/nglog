@@ -1,6 +1,6 @@
 # nglog
 
-[changes](#changes)
+[breaking changes](#changes)
 
 # GOAL
 
