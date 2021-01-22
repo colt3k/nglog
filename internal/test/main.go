@@ -15,7 +15,7 @@ func main() {
 func bigTest() {
 	someval := 1
 	log.Println(ng.Black("some black text"))
-	log.Println(ng.HiBlack("some hi black text"))
+	log.Println(ng.BrightBlack("some hi black text"))
 	log.Println(ng.Red("some red text %d", someval))
 	log.Println(ng.Green("some green text"))
 	log.Println(ng.Yellow("some yellow text"))

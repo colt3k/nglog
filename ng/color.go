@@ -104,14 +104,14 @@ const (
 
 // FG Hi-Intensity Text
 const (
-	HiBLACK ColorAttr = iota + 90
-	HiRED
-	HiGREEN
-	HiYELLOW
-	HiBLUE
-	HiMAGENTA
-	HiCYAN
-	HiWHITE
+	HiBlack ColorAttr = iota + 90
+	HiRed
+	HiGreen
+	HiYellow
+	HiBlue
+	HiMagenta
+	HiCyan
+	HiWhite
 )
 
 // BG text colors
@@ -252,8 +252,8 @@ func (c *Clr) unset() string {
 func Black(format string, a ...interface{}) string {
 	return CachedColor(FgBlack).Print(format)
 }
-func HiBlack(format string, a ...interface{}) string {
-	return CachedColor(HiBLACK).Print(format)
+func BrightBlack(format string, a ...interface{}) string {
+	return CachedColor(HiBlack).Print(format)
 }
 func Red(format string, a ...interface{}) string {
 	return CachedColor(FgRed).Printf(format, a...)

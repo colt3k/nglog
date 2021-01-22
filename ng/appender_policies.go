@@ -20,13 +20,11 @@ type TriggerPolicy interface {
 // tests using cron
 type CronTriggerPolicy struct {
 	schedule    string //	i.e. 0 0 * * * ?
-	evalOnStart bool
 }
 
 // checks while running or on start
 type SizeTriggerPolicy struct {
-	maxSize     int64
-	evalOnStart bool
+	maxSize     float64
 }
 
 // tests on interval of hours with a possible max random delay of X
@@ -35,10 +33,15 @@ type TimeTriggerPolicy struct {
 	maxRandomDelay int // 0 no delay otherwise seconds to delay after interval
 }
 
-func NewSizeTriggerPolicy(maxsizeMB int64, evalOnStart bool) *SizeTriggerPolicy {
+// DefaultSizeTriggerPolicy sets maxSizeMB to default of 4
+func DefaultSizeTriggerPolicy() *SizeTriggerPolicy {
 	t := new(SizeTriggerPolicy)
-	t.maxSize = maxsizeMB * 1024 * 1024
-	t.evalOnStart = evalOnStart
+	t.maxSize = 4 * 1024 * 1024
+	return t
+}
+func NewSizeTriggerPolicy(maxSizeMB float64) *SizeTriggerPolicy {
+	t := new(SizeTriggerPolicy)
+	t.maxSize = maxSizeMB * 1024 * 1024
 	return t
 }
 
@@ -49,7 +52,7 @@ func (s *SizeTriggerPolicy) Rotate(fileName string, strategy Strategy) (bool,err
 		return false, err
 	}
 	// get the size
-	size := fi.Size()
+	size := float64(fi.Size())
 	if size > s.maxSize {
 		fo,err := os.Open(fileName)
 		if err != nil {
@@ -90,10 +93,9 @@ func (s *TimeTriggerPolicy) Rotate(fileName string, strategy Strategy) (bool,err
 	return false, nil
 }
 
-func NewCronTriggerPolicy(schedule string, evalOnStart bool) *CronTriggerPolicy {
+func NewCronTriggerPolicy(schedule string) *CronTriggerPolicy {
 	t := new(CronTriggerPolicy)
 	t.schedule = schedule
-	t.evalOnStart = evalOnStart
 	return t
 }
 

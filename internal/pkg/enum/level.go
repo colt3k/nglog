@@ -8,15 +8,17 @@ type LogLevel int
 const (
 	NONE LogLevel = 1 + iota
 	FATAL
+	FATALNOEXIT
 	ERROR
 	WARN
 	INFO
 	DEBUG
-	DEBUGX2
+	DBGL2
+	DBGL3
 )
 
 var loglevel = [...]string{
-	"NONE", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "DEBUGX2",
+	"NONE", "FATAL", "FATALNOEXIT", "ERROR", "WARN", "INFO", "DEBUG", "DBGL2", "DBGL3",
 }
 
 func (l LogLevel) String() string {

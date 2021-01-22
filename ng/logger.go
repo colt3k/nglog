@@ -17,9 +17,11 @@ const DefaultTimestampFormat = time.RFC3339
 var (
 	once  ResyncOnce
 	std   = NewLogger()
-	DEBUGX2 = enum.DEBUGX2
+	DBGL3 = enum.DBGL3
+	DBGL2 = enum.DBGL2
 	DEBUG = enum.DEBUG
 	FATAL = enum.FATAL
+	FATALNE = enum.FATALNOEXIT
 	ERROR = enum.ERROR
 	WARN  = enum.WARN
 	INFO  = enum.INFO
@@ -38,7 +40,8 @@ type StdLogger struct {
 	ColorWARN    string
 	ColorINFO    string
 	ColorDEBUG   string
-	ColorDEBUGX2 string
+	ColorDEBUGL2 string
+	ColorDEBUGL3 string
 	// Reusable empty entry
 	entryPool sync.Pool
 	// Used to sync writing to the log. Locking is enabled by Default
@@ -63,7 +66,8 @@ func NewLogger(opts ...LogOption) *StdLogger {
 		t.ColorWARN = ColorFmt(FgYellow)
 		t.ColorINFO = ColorFmt(FgBlue)
 		t.ColorDEBUG = t.ColorDEFAULT
-		t.ColorDEBUGX2 = t.ColorDEFAULT
+		t.ColorDEBUGL2 = t.ColorDEFAULT
+		t.ColorDEBUGL3 = t.ColorDEFAULT
 		t.depth = 5 //Default how deep to go in order to find caller
 		for _, opt := range opts {
 			opt(t)
@@ -120,11 +124,17 @@ func ShowAppenders() []string {
 func Logger() *StdLogger {
 	return std
 }
+func DebugL3ln(args ...interface{}) {
+	Logln(enum.DBGL3, args...)
+}
+func DebugL2(format string, args ...interface{}) {
+	Logf(enum.DBGL3, format, args...)
+}
 func DebugX2ln(args ...interface{}) {
-	Logln(enum.DEBUGX2, args...)
+	Logln(enum.DBGL2, args...)
 }
 func DebugX2(format string, args ...interface{}) {
-	Logf(enum.DEBUGX2, format, args...)
+	Logf(enum.DBGL2, format, args...)
 }
 func Debugln(args ...interface{}) {
 	Logln(enum.DEBUG, args...)
@@ -161,8 +171,11 @@ func Flags() int {
 func Level() enum.LogLevel {
 	return std.Level()
 }
+func IsDebugL3() bool {
+	return std.Level() == enum.DBGL3
+}
 func IsDebugX2() bool {
-	return std.Level() == enum.DEBUGX2
+	return std.Level() == enum.DBGL2
 }
 func IsDebug() bool {
 	return std.Level() == enum.DEBUG
@@ -178,6 +191,9 @@ func IsError() bool {
 }
 func IsFatal() bool {
 	return std.Level() == enum.FATAL
+}
+func IsFatalNE() bool {
+	return std.Level() == enum.FATALNOEXIT
 }
 func IsNone() bool {
 	return std.Level() == enum.NONE
@@ -213,12 +229,13 @@ func (l *StdLogger) ShowOptions() {
 	var buf bytes.Buffer
 	buf.WriteString(l.Formatter.Description())
 
-	buf.WriteString(" DefaultColor:" + l.ColorDEFAULT)
-	buf.WriteString(" ErrorColor:" + l.ColorERR)
-	buf.WriteString(" WarnColor:" + l.ColorWARN)
-	buf.WriteString(" InfoColor:" + l.ColorINFO)
-	buf.WriteString(" DebugColor:" + l.ColorDEBUG)
-	buf.WriteString(" DebugX2Color:" + l.ColorDEBUGX2)
+	buf.WriteString(l.ColorDEFAULT+" DefaultColor:")
+	buf.WriteString(l.ColorERR+" ErrorColor:")
+	buf.WriteString(l.ColorWARN+" WarnColor:")
+	buf.WriteString(l.ColorINFO+" InfoColor:")
+	buf.WriteString(l.ColorDEBUG+" DebugColor:")
+	buf.WriteString(l.ColorDEBUGL2+" DebugL2Color:")
+	buf.WriteString(l.ColorDEBUGL3+" DebugL3Color:")
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.DEBUG, "", l.Caller(), false, buf.String())
 	l.releaseEntry(entry)
@@ -306,6 +323,12 @@ func (l *StdLogger) Logln(lvl enum.LogLevel, args ...interface{}) {
 			l.releaseEntry(entry)
 			os.Exit(1)
 		}
+	case enum.FATALNOEXIT:
+		if l.level >= enum.FATALNOEXIT {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			l.releaseEntry(entry)
+		}
 	case enum.ERROR:
 		if l.level >= enum.ERROR {
 			entry := l.newEntry(false)
@@ -330,8 +353,14 @@ func (l *StdLogger) Logln(lvl enum.LogLevel, args ...interface{}) {
 			entry.LogEnt(lvl, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
-	case enum.DEBUGX2:
-		if l.level >= enum.DEBUGX2 {
+	case enum.DBGL2:
+		if l.level >= enum.DBGL2 {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			l.releaseEntry(entry)
+		}
+	case enum.DBGL3:
+		if l.level >= enum.DBGL3 {
 			entry := l.newEntry(false)
 			entry.LogEnt(lvl, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
@@ -358,6 +387,12 @@ func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) 
 			entry.LogEnt(lvl, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
+	case enum.FATALNOEXIT:
+		if l.level >= enum.FATALNOEXIT {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			l.releaseEntry(entry)
+		}
 	case enum.ERROR:
 		if l.level >= enum.ERROR {
 			entry := l.newEntry(false)
@@ -382,8 +417,14 @@ func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) 
 			entry.LogEnt(lvl, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
-	case enum.DEBUGX2:
-		if l.level >= enum.DEBUGX2 {
+	case enum.DBGL2:
+		if l.level >= enum.DBGL2 {
+			entry := l.newEntry(false)
+			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			l.releaseEntry(entry)
+		}
+	case enum.DBGL3:
+		if l.level >= enum.DBGL3 {
 			entry := l.newEntry(false)
 			entry.LogEnt(lvl, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)

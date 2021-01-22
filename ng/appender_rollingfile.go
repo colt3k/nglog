@@ -12,7 +12,33 @@ type RollingFileAppender struct {
 	filePattern   string        // 	i.e. logs/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz
 }
 
-func NewRollingFileAppender(filter, fileName, name string, bufferSize int, trigger TriggerPolicy, strategy Strategy) (*RollingFileAppender,error) {
+/* NewRollingFileAppender
+	filter		source code path to apply to this appender i.e. github.com/colt3k/nglog/
+	fileName	path and name of log file
+	name		name of this appender
+	bufferSize	0 (use default: 8192)
+*/
+func NewRollingFileAppender(filter, fileName, name string, bufferSize int) (*RollingFileAppender,error) {
+	fa,err := NewFileAppender(filter, fileName, name, bufferSize)
+	if err != nil {
+		return nil, err
+	}
+	t := new(RollingFileAppender)
+	t.FileAppender = fa
+	t.triggerPolicy = DefaultSizeTriggerPolicy()
+	t.strategy = DefaultFileStrategy()
+
+	return t,nil
+}
+/* NewRollingFileAppenderWithTriggerAndStrategy
+	filter		source code path to apply to this appender i.e. github.com/colt3k/nglog/
+	fileName	path and name of log file
+	name		name of this appender
+	bufferSize	0 (use default: 8192)
+	trigger		*TriggerPolicy that fires off a rotation
+	strategy	*Strategy to apply to rotated file
+*/
+func NewRollingFileAppenderWithTriggerAndStrategy(filter, fileName, name string, bufferSize int, trigger TriggerPolicy, strategy Strategy) (*RollingFileAppender,error) {
 	fa,err := NewFileAppender(filter, fileName, name, bufferSize)
 	if err != nil {
 		return nil, err

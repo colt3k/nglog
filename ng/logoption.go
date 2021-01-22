@@ -51,6 +51,16 @@ func DebugColor(clr ColorAttr) LogOption {
 		lgr.ColorDEBUG = ColorFmt(clr)
 	}
 }
+func DebugLvl2Color(clr ColorAttr) LogOption {
+	return func(lgr *StdLogger) {
+		lgr.ColorDEBUGL2 = ColorFmt(clr)
+	}
+}
+func DebugLvl3Color(clr ColorAttr) LogOption {
+	return func(lgr *StdLogger) {
+		lgr.ColorDEBUGL3 = ColorFmt(clr)
+	}
+}
 func ColorsOn() LogOption {
 	return func(lgr *StdLogger) {
 		lgr.ColorDEFAULT = ColorFmt(FgWhite)
@@ -58,18 +68,20 @@ func ColorsOn() LogOption {
 		lgr.ColorWARN = ColorFmt(FgYellow)
 		lgr.ColorINFO = ColorFmt(FgBlue)
 		lgr.ColorDEBUG = std.ColorDEFAULT
-		lgr.ColorDEBUGX2 = std.ColorDEFAULT
+		lgr.ColorDEBUGL2 = std.ColorDEFAULT
+		lgr.ColorDEBUGL3 = std.ColorDEFAULT
 	}
 }
 
 func HiColorsOn() LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEFAULT = ColorBrightFmt(HiBLACK)
-		lgr.ColorERR = ColorBrightFmt(HiRED)
-		lgr.ColorWARN = ColorBrightFmt(HiYELLOW)
-		lgr.ColorINFO = ColorBrightFmt(HiBLUE)
+		lgr.ColorDEFAULT = ColorBrightFmt(HiBlack)
+		lgr.ColorERR = ColorBrightFmt(HiRed)
+		lgr.ColorWARN = ColorBrightFmt(HiYellow)
+		lgr.ColorINFO = ColorBrightFmt(HiBlue)
 		lgr.ColorDEBUG = std.ColorDEFAULT
-		lgr.ColorDEBUGX2 = std.ColorDEFAULT
+		lgr.ColorDEBUGL2 = std.ColorDEFAULT
+		lgr.ColorDEBUGL3 = std.ColorDEFAULT
 	}
 }
 
@@ -81,7 +93,7 @@ func ColorFmt(color ColorAttr) string {
 func ColorBrightFmt(color ColorAttr) string {
 	return "\u001b[" + strconv.Itoa(int(color)) + ";1m"
 }
-func Formatr(f Layout) LogOption {
+func Formatter(f Layout) LogOption {
 	return func(lgr *StdLogger) {
 		lgr.Formatter = f
 	}
