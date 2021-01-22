@@ -209,7 +209,7 @@
 - log.FATALNE was added, provides a logger that won't peform an exit
 - Test examples updated and new ones added
 
-#breaking changes 
+#breaking-changes 
 ----------
 ### v0.0.13 -> v0.0.14
 - log.DEBUGX2 is now log.DBGL2  (Debug Level 2)
