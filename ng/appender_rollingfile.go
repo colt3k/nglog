@@ -30,6 +30,26 @@ func NewRollingFileAppender(filter, fileName, name string, bufferSize int) (*Rol
 
 	return t,nil
 }
+/* NewRollingFileAppenderWithTrigger
+filter		source code path to apply to this appender i.e. github.com/colt3k/nglog/
+fileName	path and name of log file
+name		name of this appender
+bufferSize	0 (use default: 8192)
+trigger		*TriggerPolicy that fires off a rotation
+strategy	*Strategy to apply to rotated file
+*/
+func NewRollingFileAppenderWithTrigger(filter, fileName, name string, bufferSize int, trigger TriggerPolicy) (*RollingFileAppender,error) {
+	fa,err := NewFileAppender(filter, fileName, name, bufferSize)
+	if err != nil {
+		return nil, err
+	}
+	t := new(RollingFileAppender)
+	t.FileAppender = fa
+	t.triggerPolicy = trigger
+	t.strategy = DefaultFileStrategy()
+
+	return t,nil
+}
 /* NewRollingFileAppenderWithTriggerAndStrategy
 	filter		source code path to apply to this appender i.e. github.com/colt3k/nglog/
 	fileName	path and name of log file

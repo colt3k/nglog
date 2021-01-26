@@ -7,12 +7,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/colt3k/nglog/ers/bserr"
+	"math/rand"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/colt3k/nglog/internal/pkg/util"
 	log "github.com/colt3k/nglog/ng"
 )
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func Test(t *testing.T) {
 
@@ -23,7 +26,7 @@ func Test(t *testing.T) {
 	}
 	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOn(), log.Appenders(ca, fa))
 
-	log.ShowConfig()
+	//log.ShowConfig()
 	var val = "HelloWorld"
 	var val2 = 0.456789
 	log.Println("---FIRST LINE---", val2, val)
@@ -45,21 +48,26 @@ func Test(t *testing.T) {
 func TestRollingFileAppender(t *testing.T) {
 	ca := log.NewConsoleAppender("*")
 	rfa, err := log.NewRollingFileAppenderWithTriggerAndStrategy("*", filepath.Join("logtest", "roll_test.log"),
-		"RollingFileAppender", -1, log.NewSizeTriggerPolicy(0.000100), log.DefaultFileStrategy())
+		"RollingFileAppender", -1, log.NewSizeTriggerPolicy(.1), log.DefaultFileStrategy())
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating rolling file appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DEBUG), log.HiColorsOn(), log.Appenders(ca, rfa))
+	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, rfa))
 	_ = log.ShowAppenders()
 
-	log.Logln(log.INFO, "12345")
-	log.Logln(log.INFO, "6789")
-	log.Logln(log.INFO, "9876")
-	log.Logln(log.INFO, "54321")
-	log.Logln(log.INFO, "2468")
-	log.Logln(log.INFO, "8642")
-	log.Logln(log.INFO, "139")
-	log.Logln(log.INFO, "931")
+	// Log several MB of data to log so it will roll
+	var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	// Create a line of text (813 is 100k)
+	for i := 0; i < 7000; i++ {
+		log.Logf(log.INFO, "%s", StringWithCharset(80, charset, seededRand))
+	}
+}
+func StringWithCharset(length int, charset string, seededRand *rand.Rand) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }
 
 func TestLogFile(t *testing.T) {
