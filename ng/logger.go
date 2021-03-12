@@ -204,6 +204,15 @@ func Print(args ...interface{}) {
 func Printf(format string, args ...interface{}) {
 	std.Printf(format, args...)
 }
+func PrintTypeOfValue(arg interface{}) {
+	std.PrintTypeOfValue(arg)
+}
+func PrintStructWithFieldNames(arg interface{}) {
+	std.PrintStructWithFieldNames(arg)
+}
+func PrintGoSyntaxOfValue(arg interface{}) {
+	std.PrintGoSyntaxOfValue(arg)
+}
 func Println(args ...interface{}) {
 	std.Println(args...)
 }
@@ -254,6 +263,21 @@ func (l *StdLogger) Print(args ...interface{}) {
 func (l *StdLogger) Printf(format string, args ...interface{}) {
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.NONE, format, l.Caller(), false, args...)
+	l.releaseEntry(entry)
+}
+func (l *StdLogger) PrintTypeOfValue(arg interface{}) {
+	entry := l.newEntry(false)
+	entry.LogEnt(enum.NONE, "%T", l.Caller(), false, arg)
+	l.releaseEntry(entry)
+}
+func (l *StdLogger) PrintStructWithFieldNames(arg interface{}) {
+	entry := l.newEntry(false)
+	entry.LogEnt(enum.NONE, "%+v", l.Caller(), false, arg)
+	l.releaseEntry(entry)
+}
+func (l *StdLogger) PrintGoSyntaxOfValue(arg interface{}) {
+	entry := l.newEntry(false)
+	entry.LogEnt(enum.NONE, "%#v", l.Caller(), false, arg)
 	l.releaseEntry(entry)
 }
 func (l *StdLogger) Println(args ...interface{}) {

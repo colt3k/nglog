@@ -82,6 +82,7 @@ func (entry *LogMsg) Fatal(args ...interface{}) {
 func (entry *LogMsg) LogEnt(level enum.LogLevel, format, caller string, rtn bool, args ...interface{}) {
 	entry.caller = caller
 	//has format but doesn't perform a return
+	// https://golang.org/pkg/fmt/
 	if len(format) > 0 && !rtn {
 		entry.log(level, fmt.Sprint(fmt.Sprintf(format, args...)))
 	} else if len(format) == 0 && !rtn { // no format and no return

@@ -17,6 +17,17 @@ import (
 )
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+type Obj struct {
+	Name	string `json:"name"`
+	Value 	string `json:"value"`
+	Id 		int `json:"id"`
+}
+func TestDump(t *testing.T) {
+	//o := Obj{Name: "fred", Value: "testxxx", Id: 90}
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOn(), log.Appenders(ca))
+}
+
 func Test(t *testing.T) {
 
 	ca := log.NewConsoleAppender("*")
@@ -184,11 +195,11 @@ func TestSyslog(t *testing.T) {
 func TestSyslogXML(t *testing.T) {
 
 	ca := log.NewConsoleAppender("*")
-	fa, err := log.NewFileAppender("*", "output.txt", "", 0)
+	sa, err := log.NewSyslogAppender("*", "myapp")
 	if err != nil {
-		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+		log.Logf(log.FATAL, "issue creating syslog appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.XMLLayout)), log.Appenders(ca, fa))
+	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.XMLLayout)), log.Appenders(ca, sa))
 
 	log.Logln(log.DBGL3, "debug level 3 message")
 	log.Logln(log.DBGL2, "debug level 2 message")
@@ -201,4 +212,32 @@ func TestSyslogXML(t *testing.T) {
 
 func TestErrStacks(t *testing.T) {
 	bserr.StopErr(fmt.Errorf("some error one"), nil...)
+}
+
+type TestType struct {
+	Name	string
+	Value	int
+}
+func TestTypeOfValue(t *testing.T) {
+
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca))
+
+	log.PrintTypeOfValue("hello")
+}
+func TestStructWithFieldNames(t *testing.T) {
+
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca))
+
+	log.PrintStructWithFieldNames(TestType{Name: "John Doe", Value: 2})
+}
+func TestGoSyntaxOfValue(t *testing.T) {
+
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca))
+
+	log.PrintGoSyntaxOfValue("test 1")
+	log.PrintGoSyntaxOfValue(1)
+	log.PrintGoSyntaxOfValue(TestType{Name: "John Doe", Value: 2})
 }
