@@ -207,6 +207,11 @@
 - log.FATALNE was added, provides a logger that won't peform an exit
 - Test examples updated and new ones added
 
+### v0.0.16
+- Fix struct prints using
+  PrintStructWithFieldNames(arg interface{})
+  PrintStructWithFieldNamesIndent(arg interface{}, indent bool)
+
 #breaking changes 
 ----------
 ### v0.0.13 -> v0.0.14
@@ -219,3 +224,12 @@
 - Hi<Color> Constants changed to proper case
     -   HiBLACK -> HiBlack, etc...
 - HiBlack function changed to BrightBlack
+
+# dependencies
+----------
+- github.com/colt3k/utils/archive
+  used to roll logs with compression
+- github.com/go-mail/mail
+  used in mail appender
+- github.com/mattn/go-isatty
+  supports custom output on terminals
