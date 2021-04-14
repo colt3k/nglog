@@ -229,8 +229,8 @@ func TestStructWithFieldNames(t *testing.T) {
 
 	ca := log.NewConsoleAppender("*")
 	log.Modify(log.LogLevel(log.DEBUG), log.ColorsOn(), log.Appenders(ca))
-
 	log.PrintStructWithFieldNames(TestType{Name: "John Doe", Value: 2})
+	log.PrintStructWithFieldNamesIndent(TestType{Name: "John Doe", Value: 2}, true)
 }
 func TestGoSyntaxOfValue(t *testing.T) {
 

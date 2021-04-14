@@ -20,6 +20,7 @@ type Logger interface {
 	Printf(format string, args ...interface{})
 	PrintTypeOfValue(arg interface{})
 	PrintStructWithFieldNames(arg interface{})
+	PrintStructWithFieldNamesIndent(arg interface{}, indent bool)
 	PrintGoSyntaxOfValue(arg interface{})
 	Println(args ...interface{})
 	SetLevel(level enum.LogLevel)

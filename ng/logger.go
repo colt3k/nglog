@@ -2,6 +2,7 @@ package ng
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"log"
 	"os"
@@ -210,6 +211,9 @@ func PrintTypeOfValue(arg interface{}) {
 func PrintStructWithFieldNames(arg interface{}) {
 	std.PrintStructWithFieldNames(arg)
 }
+func PrintStructWithFieldNamesIndent(arg interface{}, indent bool) {
+	std.PrintStructWithFieldNamesIndent(arg, indent)
+}
 func PrintGoSyntaxOfValue(arg interface{}) {
 	std.PrintGoSyntaxOfValue(arg)
 }
@@ -271,9 +275,21 @@ func (l *StdLogger) PrintTypeOfValue(arg interface{}) {
 	l.releaseEntry(entry)
 }
 func (l *StdLogger) PrintStructWithFieldNames(arg interface{}) {
+	l.PrintStructWithFieldNamesIndent(arg, false)
+}
+func (l *StdLogger) PrintStructWithFieldNamesIndent(arg interface{}, indent bool) {
+	l.Formatter.DisableTimeStamp()
 	entry := l.newEntry(false)
-	entry.LogEnt(enum.NONE, "%+v", l.Caller(), false, arg)
+	var s []byte
+	if indent {
+		s, _ = json.MarshalIndent(arg, "", "  ")
+	} else {
+		s, _ = json.Marshal(arg)
+	}
+
+	entry.LogEnt(enum.NONE, "%v", l.Caller(), false, string(s))
 	l.releaseEntry(entry)
+	l.Formatter.EnableTimeStamp()
 }
 func (l *StdLogger) PrintGoSyntaxOfValue(arg interface{}) {
 	entry := l.newEntry(false)
