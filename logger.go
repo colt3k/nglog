@@ -1,14 +1,16 @@
 package nglog
 
 /*
-test
+the enumeration application is in https://go.collins-tech.com/coltek/gogenerate.git
+Build: go build -o enumeration cmd/enumeration/main.go
+Move: mv enumeration $GOPATH/bin
 */
 import (
 	"github.com/colt3k/nglog/internal/pkg/enum"
 	"github.com/colt3k/nglog/ng"
 )
 
-//go:generate enumeration -pkg enum -type LogLevel -list NONE,FATAL,ERROR,WARN,INFO,DEBUG,DEBUGX2
+//go:generate enumeration -pkg enum -type LogLevel -list NONE,FATAL,FATALNOEXIT,ERROR,WARN,INFO,DEBUG,DBGL2,DBGL3
 //go:generate enumeration -pkg enum -type Flags -list Ldate,Ltime,Lmicroseconds,Llongfile,Lshortfile,LUTC,LstdFlags -listval shift
 
 type Logger interface {
