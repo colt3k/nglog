@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/colt3k/nglogint"
+	"github.com/colt3k/nglogint/types"
 	"strconv"
 )
 
@@ -52,8 +54,8 @@ func (f *JSONLayout) DisableTimeStamp() {
 func (f *JSONLayout) EnableTimeStamp() {
 	f.DisableTimestamp = true
 }
-func (f *JSONLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
-	data := make(Fields, len(entry.Fields)+3)
+func (f *JSONLayout) Format(entry nglogint.Msg, disableColor bool) ([]byte, error) {
+	data := make(types.Fields, len(entry.MsgFields())+3)
 	//@TODO uncomment and fix
 	//for k, v := range entry.Fields {
 	//	switch v := v.(type) {
@@ -73,10 +75,10 @@ func (f *JSONLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	}
 
 	if !f.DisableTimestamp {
-		data[f.ParamMap.Find(ParamTime)] = entry.Time.Format(timestampFormat)
+		data[f.ParamMap.Find(ParamTime)] = entry.MsgTime().Format(timestampFormat)
 	}
-	data[f.ParamMap.Find(ParamMsg)] = entry.Message
-	data[f.ParamMap.Find(ParamLevel)] = entry.Level.String()
+	data[f.ParamMap.Find(ParamMsg)] = entry.MessageStr()
+	data[f.ParamMap.Find(ParamLevel)] = entry.MsgLevel().String()
 
 	serialized, err := json.Marshal(data)
 	if err != nil {

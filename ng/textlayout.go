@@ -3,13 +3,16 @@ package ng
 import (
 	"bytes"
 	"fmt"
+	"github.com/colt3k/nglogint"
+	"github.com/colt3k/nglogint/enum"
+	"github.com/colt3k/nglogint/types"
+
 	"strings"
 	"sync"
 	"time"
 
 	"strconv"
 
-	"github.com/colt3k/nglog/internal/pkg/enum"
 	"github.com/colt3k/nglog/internal/pkg/util"
 )
 
@@ -19,14 +22,6 @@ var (
 
 func init() {
 	baseTimestamp = time.Now()
-}
-
-type Layout interface {
-	Format(*LogMsg, bool) ([]byte, error)
-	Description() string
-	Colors(bool)
-	DisableTimeStamp()
-	EnableTimeStamp()
 }
 
 type TextLayout struct {
@@ -66,12 +61,12 @@ func (f *TextLayout) Description() string {
 	byt.WriteString("\nDisableTimestamp: " + strconv.FormatBool(f.DisableTimestamp))
 	return byt.String()
 }
-func (f *TextLayout) init(entry *LogMsg) {
-	if entry.Logger != nil {
+func (f *TextLayout) init(entry nglogint.Msg) {
+	if entry.MsgLogger() != nil {
 		f.isTerminal = !NotTerminal
 	}
 }
-func (f *TextLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
+func (f *TextLayout) Format(entry nglogint.Msg, disableColor bool) ([]byte, error) {
 	var b *bytes.Buffer
 
 	b = &bytes.Buffer{}
@@ -85,18 +80,18 @@ func (f *TextLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 		timestampFormat = DefaultTimestampFormat
 	}
 	if isColored {
-		f.printColored(b, entry, entry.Fields, timestampFormat)
+		f.printColored(b, entry, entry.MsgFields(), timestampFormat)
 	} else {
 		if !f.DisableTimestamp {
-			util.AppendKeyValue(b, "time", entry.Time.Format(timestampFormat), f.QuoteEmptyVal)
+			util.AppendKeyValue(b, "time", entry.MsgTime().Format(timestampFormat), f.QuoteEmptyVal)
 		}
-		if entry.Level > enum.NONE {
-			util.AppendKeyValue(b, "level", entry.Level.String(), f.QuoteEmptyVal)
+		if entry.MsgLevel() > enum.NONE {
+			util.AppendKeyValue(b, "level", entry.MsgLevel().String(), f.QuoteEmptyVal)
 		}
-		if entry.Message != "" {
-			util.AppendKeyValue(b, "msg", entry.Message, f.QuoteEmptyVal)
+		if entry.MessageStr() != "" {
+			util.AppendKeyValue(b, "msg", entry.MessageStr(), f.QuoteEmptyVal)
 		}
-		for _, d := range entry.Fields {
+		for _, d := range entry.MsgFields() {
 			for k, v := range d {
 				util.AppendKeyValue(b, k, v, f.QuoteEmptyVal)
 			}
@@ -108,45 +103,45 @@ func (f *TextLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (f *TextLayout) printColored(b *bytes.Buffer, entry *LogMsg, keys []Fields, timestampFormat string) {
+func (f *TextLayout) printColored(b *bytes.Buffer, entry nglogint.Msg, keys []types.Fields, timestampFormat string) {
 	var levelColorOption string
 
-	switch entry.Level {
+	switch entry.MsgLevel() {
 	case enum.DBGL3:
-		levelColorOption = entry.Logger.ColorDEBUGL3
+		levelColorOption = entry.MsgLogger().ColorDEBUGL3()
 	case enum.DBGL2:
-		levelColorOption = entry.Logger.ColorDEBUGL2
+		levelColorOption = entry.MsgLogger().ColorDEBUGL2()
 	case enum.DEBUG:
-		levelColorOption = entry.Logger.ColorDEBUG
+		levelColorOption = entry.MsgLogger().ColorDEBUG()
 	case enum.INFO:
-		levelColorOption = entry.Logger.ColorINFO
+		levelColorOption = entry.MsgLogger().ColorINFO()
 	case enum.WARN:
-		levelColorOption = entry.Logger.ColorWARN
+		levelColorOption = entry.MsgLogger().ColorWARN()
 	case enum.ERROR, enum.FATAL, enum.FATALNOEXIT:
-		levelColorOption = entry.Logger.ColorERR
+		levelColorOption = entry.MsgLogger().ColorERR()
 	default:
-		levelColorOption = entry.Logger.ColorDEFAULT
+		levelColorOption = entry.MsgLogger().ColorDEFAULT()
 	}
 	var levelText = "\t "
-	if entry.Level > enum.NONE {
-		if len(entry.Level.String()) == 4 {
-			levelText = strings.ToUpper(entry.Level.String())[0:4] + " "
+	if entry.MsgLevel() > enum.NONE {
+		if len(entry.MsgLevel().String()) == 4 {
+			levelText = strings.ToUpper(entry.MsgLevel().String())[0:4] + " "
 		} else {
-			levelText = strings.ToUpper(entry.Level.String())[0:5]
+			levelText = strings.ToUpper(entry.MsgLevel().String())[0:5]
 		}
 	}
 
 	if f.DisableTimestamp {
 		if len(strings.TrimSpace(levelText)) > 0 {
-			fmt.Fprintf(b, "%s%s%s %-44s ", levelColorOption, levelText, CLRRESET, entry.Message)
+			fmt.Fprintf(b, "%s%s%s %-44s ", levelColorOption, levelText, CLRRESET, entry.MessageStr())
 		} else {
-			fmt.Fprintf(b, "%-44s ", entry.Message)
+			fmt.Fprintf(b, "%-44s ", entry.MessageStr())
 		}
 	} else {
 		if len(strings.TrimSpace(levelText)) > 0 {
-			fmt.Fprintf(b, "%s%s%s [%s] %-44s ", levelColorOption, levelText, CLRRESET, entry.Time.Format(timestampFormat), entry.Message)
+			fmt.Fprintf(b, "%s%s%s [%s] %-44s ", levelColorOption, levelText, CLRRESET, entry.MsgTime().Format(timestampFormat), entry.MessageStr())
 		} else {
-			fmt.Fprintf(b, "[%s] %-44s ", entry.Time.Format(timestampFormat), entry.Message)
+			fmt.Fprintf(b, "[%s] %-44s ", entry.MsgTime().Format(timestampFormat), entry.MessageStr())
 		}
 	}
 
@@ -163,7 +158,7 @@ func (f *TextLayout) printColored(b *bytes.Buffer, entry *LogMsg, keys []Fields,
 	//}
 }
 
-func prefixFieldClashes(data Fields) {
+func prefixFieldClashes(data types.Fields) {
 	if t, ok := data[ParamTime]; ok {
 		data["param."+ParamTime] = t
 	}

@@ -3,15 +3,15 @@ package ng
 import (
 	"bytes"
 	"fmt"
+	"github.com/colt3k/nglogint"
+	"github.com/colt3k/nglogint/enum"
+	"github.com/colt3k/nglogint/types"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/colt3k/nglog/internal/pkg/enum"
 )
 
-// Fields type, used to pass to `WithFields`.
-type Fields map[string]interface{}
 
 var bufferPool *sync.Pool
 
@@ -23,6 +23,8 @@ func init() {
 	}
 }
 
+
+
 //Create a pool for reuse in order to speed up process of logging
 type LogMsg struct {
 	Logger *StdLogger
@@ -31,7 +33,7 @@ type LogMsg struct {
 	//Message passed into logger
 	Message string
 	//Fields passed to template i.e. for JSON output
-	Fields []Fields
+	Fields []types.Fields
 	// Time entry was created
 	Time time.Time
 	// When formatter is called in entry.log(), an Buffer may be set to entry
@@ -44,14 +46,29 @@ func NewEntry(logger *StdLogger) *LogMsg {
 	t := &LogMsg{
 		Logger: logger,
 		// Default is three fields, give a little extra room
-		Fields: make([]Fields, 5),
+		Fields: make([]types.Fields, 5),
 	}
 	return t
 }
 
+func (entry *LogMsg) MsgLogger() nglogint.Logger {
+	return entry.Logger
+}
+func (entry *LogMsg) MsgFields() []types.Fields {
+	return entry.Fields
+}
+func (entry *LogMsg) MsgLevel() enum.LogLevel {
+	return entry.Level
+}
+func (entry *LogMsg) MessageStr() string {
+	return entry.Message
+}
+func (entry *LogMsg) MsgTime() time.Time {
+	return entry.Time
+}
 // Add a map of fields to the Entry.
-func (entry *LogMsg) WithFields(fields []Fields) *LogMsg {
-	t := make([]Fields, 0)
+func (entry *LogMsg) WithFields(fields []types.Fields) nglogint.Msg {
+	t := make([]types.Fields, 0)
 	//data := make(Fields, len(entry.Fields)+len(fields))
 	for _, d := range entry.Fields {
 		t = append(t, d)

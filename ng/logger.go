@@ -3,13 +3,15 @@ package ng
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/colt3k/nglogint"
+	"github.com/colt3k/nglogint/enum"
+	"github.com/colt3k/nglogint/types"
 	"io"
 	"log"
 	"os"
 	"sync"
 	"time"
 
-	"github.com/colt3k/nglog/internal/pkg/enum"
 	"github.com/colt3k/nglog/internal/pkg/util"
 )
 
@@ -30,19 +32,19 @@ var (
 )
 
 type StdLogger struct {
-	Formatter    Layout
+	Formatter    nglogint.Layout
 	appenders    []Appender
 	Out          io.Writer
 	level        enum.LogLevel
 	depth        int
 	flags        enum.Flags
-	ColorDEFAULT string
-	ColorERR     string
-	ColorWARN    string
-	ColorINFO    string
-	ColorDEBUG   string
-	ColorDEBUGL2 string
-	ColorDEBUGL3 string
+	ClrDEFAULT string
+	ClrERR     string
+	ClrWARN    string
+	ClrINFO    string
+	ClrDEBUG   string
+	ClrDEBUGL2 string
+	ClrDEBUGL3   string
 	// Reusable empty entry
 	entryPool sync.Pool
 	// Used to sync writing to the log. Locking is enabled by Default
@@ -62,13 +64,13 @@ func NewLogger(opts ...LogOption) *StdLogger {
 		t.Now = time.Now() // sets when first created
 		t.Formatter = &TextLayout{ForceColor: true}
 		//Set colors by default, still can override with opts
-		t.ColorDEFAULT = ColorFmt(FgWhite)
-		t.ColorERR = ColorFmt(FgRed)
-		t.ColorWARN = ColorFmt(FgYellow)
-		t.ColorINFO = ColorFmt(FgBlue)
-		t.ColorDEBUG = t.ColorDEFAULT
-		t.ColorDEBUGL2 = t.ColorDEFAULT
-		t.ColorDEBUGL3 = t.ColorDEFAULT
+		t.ClrDEFAULT = ColorFmt(FgWhite)
+		t.ClrERR = ColorFmt(FgRed)
+		t.ClrWARN = ColorFmt(FgYellow)
+		t.ClrINFO = ColorFmt(FgBlue)
+		t.ClrDEBUG = t.ClrDEFAULT
+		t.ClrDEBUGL2 = t.ClrDEFAULT
+		t.ClrDEBUGL3 = t.ClrDEFAULT
 		t.depth = 5 //Default how deep to go in order to find caller
 		for _, opt := range opts {
 			opt(t)
@@ -98,7 +100,7 @@ func (l *StdLogger) newEntry(fields bool) *LogMsg {
 	lmsg, ok := l.entryPool.Get().(*LogMsg)
 	if ok {
 		if !fields {
-			lmsg.Fields = make([]Fields, 0)
+			lmsg.Fields = make([]types.Fields, 0)
 		}
 		return lmsg
 	}
@@ -108,6 +110,28 @@ func (l *StdLogger) newEntry(fields bool) *LogMsg {
 
 func (l *StdLogger) releaseEntry(entry *LogMsg) {
 	l.entryPool.Put(entry)
+}
+
+func (l *StdLogger) ColorDEBUGL3() string {
+	return l.ClrDEBUGL3
+}
+func (l *StdLogger) ColorDEBUGL2() string {
+	return l.ClrDEBUGL2
+}
+func (l *StdLogger) ColorDEBUG() string {
+	return l.ClrDEBUG
+}
+func (l *StdLogger) ColorINFO() string {
+	return l.ClrINFO
+}
+func (l *StdLogger) ColorWARN() string {
+	return l.ClrWARN
+}
+func (l *StdLogger) ColorERR() string {
+	return l.ClrERR
+}
+func (l *StdLogger) ColorDEFAULT() string {
+	return l.ClrDEFAULT
 }
 
 func Modify(opts ...LogOption) {
@@ -232,7 +256,7 @@ func DisableTimestamp() {
 func EnableTimestamp() {
 	std.Formatter.DisableTimeStamp()
 }
-func SetFormatter(formatter Layout) {
+func SetFormatter(formatter nglogint.Layout) {
 	std.SetFormatter(formatter)
 }
 func ShowConfig() {
@@ -242,13 +266,13 @@ func (l *StdLogger) ShowOptions() {
 	var buf bytes.Buffer
 	buf.WriteString(l.Formatter.Description())
 
-	buf.WriteString(l.ColorDEFAULT+" DefaultColor:")
-	buf.WriteString(l.ColorERR+" ErrorColor:")
-	buf.WriteString(l.ColorWARN+" WarnColor:")
-	buf.WriteString(l.ColorINFO+" InfoColor:")
-	buf.WriteString(l.ColorDEBUG+" DebugColor:")
-	buf.WriteString(l.ColorDEBUGL2+" DebugL2Color:")
-	buf.WriteString(l.ColorDEBUGL3+" DebugL3Color:")
+	buf.WriteString(l.ColorDEFAULT()+" DefaultColor:")
+	buf.WriteString(l.ColorERR()+" ErrorColor:")
+	buf.WriteString(l.ColorWARN()+" WarnColor:")
+	buf.WriteString(l.ColorINFO()+" InfoColor:")
+	buf.WriteString(l.ColorDEBUG()+" DebugColor:")
+	buf.WriteString(l.ColorDEBUGL2()+" DebugL2Color:")
+	buf.WriteString(l.ColorDEBUGL3() +" DebugL3Color:")
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.DEBUG, "", l.Caller(), false, buf.String())
 	l.releaseEntry(entry)
@@ -318,13 +342,13 @@ func (l *StdLogger) Caller() string {
 //
 // Note that it doesn't log until you call Debug, Print, Info, Warn, Fatal
 // or Panic on the Entry it returns.
-func WithFields(fields []Fields) *LogMsg {
+func WithFields(fields []types.Fields) nglogint.Msg {
 	return std.WithFields(fields)
 }
 
 // Adds a struct of fields to the log entry. All it does is call `WithField` for
 // each `Field`.
-func (l *StdLogger) WithFields(fields []Fields) *LogMsg {
+func (l *StdLogger) WithFields(fields []types.Fields) nglogint.Msg {
 	entry := l.newEntry(true)
 	defer l.releaseEntry(entry)
 	return entry.WithFields(fields)
@@ -343,7 +367,7 @@ LstdFlags     = Ldate | Ltime // initial values for the standard logger
 func (l *StdLogger) SetFlags(flg enum.Flags) {
 	log.SetFlags(int(flg))
 }
-func (l *StdLogger) SetFormatter(formatter Layout) {
+func (l *StdLogger) SetFormatter(formatter nglogint.Layout) {
 	l.Formatter = formatter
 }
 

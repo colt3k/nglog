@@ -125,15 +125,15 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *log.LogMsg, timesta
 	var levelColorOption string
 	switch entry.Level {
 	case enum.DEBUG:
-		levelColorOption = entry.Logger.ColorDEBUG
+		levelColorOption = entry.MsgLogger().ColorDEBUG()
 	case enum.INFO:
-		levelColorOption = entry.Logger.ColorINFO
+		levelColorOption = entry.MsgLogger().ColorINFO()
 	case enum.WARN:
-		levelColorOption = entry.Logger.ColorWARN
+		levelColorOption = entry.MsgLogger().ColorWARN()
 	case enum.ERROR, enum.FATAL:
-		levelColorOption = entry.Logger.ColorERR
+		levelColorOption = entry.MsgLogger().ColorERR()
 	default:
-		levelColorOption = entry.Logger.ColorDEFAULT
+		levelColorOption = entry.MsgLogger().ColorDEFAULT()
 	}
 
 	var levelText = "\t "

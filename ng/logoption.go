@@ -1,10 +1,11 @@
 package ng
 
 import (
+	"github.com/colt3k/nglogint"
+	"github.com/colt3k/nglogint/enum"
 	"io"
 	"strconv"
 
-	"github.com/colt3k/nglog/internal/pkg/enum"
 )
 
 type LogOption func(h *StdLogger)
@@ -33,55 +34,55 @@ func SetFlgs(i enum.Flags) LogOption {
 }
 func ErrColor(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorERR = ColorFmt(clr)
+		lgr.ClrERR = ColorFmt(clr)
 	}
 }
 func WarnColor(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorWARN = ColorFmt(clr)
+		lgr.ClrWARN = ColorFmt(clr)
 	}
 }
 func InfoColor(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorINFO = ColorFmt(clr)
+		lgr.ClrINFO = ColorFmt(clr)
 	}
 }
 func DebugColor(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEBUG = ColorFmt(clr)
+		lgr.ClrDEBUG = ColorFmt(clr)
 	}
 }
 func DebugLvl2Color(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEBUGL2 = ColorFmt(clr)
+		lgr.ClrDEBUGL2 = ColorFmt(clr)
 	}
 }
 func DebugLvl3Color(clr ColorAttr) LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEBUGL3 = ColorFmt(clr)
+		lgr.ClrDEBUGL3 = ColorFmt(clr)
 	}
 }
 func ColorsOn() LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEFAULT = ColorFmt(FgWhite)
-		lgr.ColorERR = ColorFmt(FgRed)
-		lgr.ColorWARN = ColorFmt(FgYellow)
-		lgr.ColorINFO = ColorFmt(FgBlue)
-		lgr.ColorDEBUG = std.ColorDEFAULT
-		lgr.ColorDEBUGL2 = std.ColorDEFAULT
-		lgr.ColorDEBUGL3 = std.ColorDEFAULT
+		lgr.ClrDEFAULT = ColorFmt(FgWhite)
+		lgr.ClrERR = ColorFmt(FgRed)
+		lgr.ClrWARN = ColorFmt(FgYellow)
+		lgr.ClrINFO = ColorFmt(FgBlue)
+		lgr.ClrDEBUG = std.ClrDEFAULT
+		lgr.ClrDEBUGL2 = std.ClrDEFAULT
+		lgr.ClrDEBUGL3 = std.ClrDEFAULT
 	}
 }
 
 func HiColorsOn() LogOption {
 	return func(lgr *StdLogger) {
-		lgr.ColorDEFAULT = ColorBrightFmt(HiBlack)
-		lgr.ColorERR = ColorBrightFmt(HiRed)
-		lgr.ColorWARN = ColorBrightFmt(HiYellow)
-		lgr.ColorINFO = ColorBrightFmt(HiBlue)
-		lgr.ColorDEBUG = std.ColorDEFAULT
-		lgr.ColorDEBUGL2 = std.ColorDEFAULT
-		lgr.ColorDEBUGL3 = std.ColorDEFAULT
+		lgr.ClrDEFAULT = ColorBrightFmt(HiBlack)
+		lgr.ClrERR = ColorBrightFmt(HiRed)
+		lgr.ClrWARN = ColorBrightFmt(HiYellow)
+		lgr.ClrINFO = ColorBrightFmt(HiBlue)
+		lgr.ClrDEBUG = std.ClrDEFAULT
+		lgr.ClrDEBUGL2 = std.ClrDEFAULT
+		lgr.ClrDEBUGL3 = std.ClrDEFAULT
 	}
 }
 
@@ -93,7 +94,7 @@ func ColorFmt(color ColorAttr) string {
 func ColorBrightFmt(color ColorAttr) string {
 	return "\u001b[" + strconv.Itoa(int(color)) + ";1m"
 }
-func Formatter(f Layout) LogOption {
+func Formatter(f nglogint.Layout) LogOption {
 	return func(lgr *StdLogger) {
 		lgr.Formatter = f
 	}

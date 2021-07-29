@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/colt3k/nglogint/types"
 	"strconv"
 )
 
@@ -56,7 +57,7 @@ func (f *XMLLayout) EnableTimeStamp() {
 	f.DisableTimestamp = true
 }
 func (f *XMLLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
-	data := make(Fields, len(entry.Fields)+3)
+	data := make(types.Fields, len(entry.Fields)+3)
 
 	prefixFieldClashes(data)
 
@@ -78,9 +79,12 @@ func (f *XMLLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	return append(serialized, '\n'), nil
 }
 
+type LayoutFields struct {
+	types.Fields
+}
 // StringMap marshals into XML.
-func (m Fields) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	if len(m) == 0 {
+func (m LayoutFields) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if len(m.Fields) == 0 {
 		return nil
 	}
 
@@ -89,7 +93,7 @@ func (m Fields) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		return err
 	}
 
-	for k, i := range m {
+	for k, i := range m.Fields {
 		switch v := i.(type) {
 		case int:
 			e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: strconv.Itoa(v)})
