@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"github.com/colt3k/nglogint/types"
+	"github.com/colt3k/nglog/internal/pkg/types"
 	"strconv"
 )
 

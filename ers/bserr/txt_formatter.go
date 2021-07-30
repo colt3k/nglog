@@ -3,17 +3,15 @@ package bserr
 import (
 	"bytes"
 	"fmt"
+	"github.com/colt3k/nglog/enum"
+	"github.com/colt3k/nglog/internal/pkg/types"
+	log "github.com/colt3k/nglog/ng"
+	"golang.org/x/crypto/ssh/terminal"
 	"io"
 	"os"
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/colt3k/nglog/internal/pkg/enum"
-
-	"golang.org/x/crypto/ssh/terminal"
-
-	log "github.com/colt3k/nglog/ng"
 )
 
 const defaultTimestampFormat = time.RFC3339
@@ -234,7 +232,7 @@ func checkIfTerminal(w io.Writer) bool {
 	}
 }
 
-func prefixFieldClashes(data log.Fields) {
+func prefixFieldClashes(data types.Fields) {
 	if t, ok := data[log.ParamTime]; ok {
 		data["param.time"] = t
 	}

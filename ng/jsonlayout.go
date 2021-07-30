@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/colt3k/nglogint"
-	"github.com/colt3k/nglogint/types"
+	"github.com/colt3k/nglog"
+	"github.com/colt3k/nglog/internal/pkg/types"
 	"strconv"
 )
 
@@ -54,7 +54,7 @@ func (f *JSONLayout) DisableTimeStamp() {
 func (f *JSONLayout) EnableTimeStamp() {
 	f.DisableTimestamp = true
 }
-func (f *JSONLayout) Format(entry nglogint.Msg, disableColor bool) ([]byte, error) {
+func (f *JSONLayout) Format(entry nglog.Msg, disableColor bool) ([]byte, error) {
 	data := make(types.Fields, len(entry.MsgFields())+3)
 	//@TODO uncomment and fix
 	//for k, v := range entry.Fields {

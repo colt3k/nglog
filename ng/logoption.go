@@ -1,11 +1,10 @@
 package ng
 
 import (
-	"github.com/colt3k/nglogint"
-	"github.com/colt3k/nglogint/enum"
+	"github.com/colt3k/nglog"
+	"github.com/colt3k/nglog/enum"
 	"io"
 	"strconv"
-
 )
 
 type LogOption func(h *StdLogger)
@@ -94,7 +93,7 @@ func ColorFmt(color ColorAttr) string {
 func ColorBrightFmt(color ColorAttr) string {
 	return "\u001b[" + strconv.Itoa(int(color)) + ";1m"
 }
-func Formatter(f nglogint.Layout) LogOption {
+func Formatter(f nglog.Layout) LogOption {
 	return func(lgr *StdLogger) {
 		lgr.Formatter = f
 	}

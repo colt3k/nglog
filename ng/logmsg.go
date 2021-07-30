@@ -3,13 +3,12 @@ package ng
 import (
 	"bytes"
 	"fmt"
-	"github.com/colt3k/nglogint"
-	"github.com/colt3k/nglogint/enum"
-	"github.com/colt3k/nglogint/types"
+	"github.com/colt3k/nglog"
+	"github.com/colt3k/nglog/enum"
+	"github.com/colt3k/nglog/internal/pkg/types"
 	"os"
 	"sync"
 	"time"
-
 )
 
 
@@ -51,7 +50,7 @@ func NewEntry(logger *StdLogger) *LogMsg {
 	return t
 }
 
-func (entry *LogMsg) MsgLogger() nglogint.Logger {
+func (entry *LogMsg) MsgLogger() nglog.Logger {
 	return entry.Logger
 }
 func (entry *LogMsg) MsgFields() []types.Fields {
@@ -67,7 +66,7 @@ func (entry *LogMsg) MsgTime() time.Time {
 	return entry.Time
 }
 // Add a map of fields to the Entry.
-func (entry *LogMsg) WithFields(fields []types.Fields) nglogint.Msg {
+func (entry *LogMsg) WithFields(fields []types.Fields) nglog.Msg {
 	t := make([]types.Fields, 0)
 	//data := make(Fields, len(entry.Fields)+len(fields))
 	for _, d := range entry.Fields {

@@ -3,16 +3,15 @@ package ng
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/colt3k/nglogint"
-	"github.com/colt3k/nglogint/enum"
-	"github.com/colt3k/nglogint/types"
+	"github.com/colt3k/nglog"
+	"github.com/colt3k/nglog/enum"
+	"github.com/colt3k/nglog/internal/pkg/types"
+	"github.com/colt3k/nglog/internal/pkg/util"
 	"io"
 	"log"
 	"os"
 	"sync"
 	"time"
-
-	"github.com/colt3k/nglog/internal/pkg/util"
 )
 
 const DefaultTimestampFormat = time.RFC3339
@@ -32,7 +31,7 @@ var (
 )
 
 type StdLogger struct {
-	Formatter    nglogint.Layout
+	Formatter    nglog.Layout
 	appenders    []Appender
 	Out          io.Writer
 	level        enum.LogLevel
@@ -256,7 +255,7 @@ func DisableTimestamp() {
 func EnableTimestamp() {
 	std.Formatter.DisableTimeStamp()
 }
-func SetFormatter(formatter nglogint.Layout) {
+func SetFormatter(formatter nglog.Layout) {
 	std.SetFormatter(formatter)
 }
 func ShowConfig() {
@@ -342,13 +341,13 @@ func (l *StdLogger) Caller() string {
 //
 // Note that it doesn't log until you call Debug, Print, Info, Warn, Fatal
 // or Panic on the Entry it returns.
-func WithFields(fields []types.Fields) nglogint.Msg {
+func WithFields(fields []types.Fields) nglog.Msg {
 	return std.WithFields(fields)
 }
 
 // Adds a struct of fields to the log entry. All it does is call `WithField` for
 // each `Field`.
-func (l *StdLogger) WithFields(fields []types.Fields) nglogint.Msg {
+func (l *StdLogger) WithFields(fields []types.Fields) nglog.Msg {
 	entry := l.newEntry(true)
 	defer l.releaseEntry(entry)
 	return entry.WithFields(fields)
@@ -367,7 +366,7 @@ LstdFlags     = Ldate | Ltime // initial values for the standard logger
 func (l *StdLogger) SetFlags(flg enum.Flags) {
 	log.SetFlags(int(flg))
 }
-func (l *StdLogger) SetFormatter(formatter nglogint.Layout) {
+func (l *StdLogger) SetFormatter(formatter nglog.Layout) {
 	l.Formatter = formatter
 }
 

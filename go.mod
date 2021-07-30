@@ -1,7 +1,6 @@
 module github.com/colt3k/nglog
 
 require (
-	github.com/colt3k/nglogint v0.0.0-00010101000000-000000000000
 	github.com/colt3k/utils/archive v0.0.5
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/mattn/go-isatty v0.0.12
@@ -13,5 +12,3 @@ require (
 )
 
 go 1.16
-
-replace github.com/colt3k/nglogint => ../nglogint

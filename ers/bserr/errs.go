@@ -1,6 +1,7 @@
 package bserr
 
 import (
+	"github.com/colt3k/nglog/internal/pkg/types"
 	"strconv"
 	"strings"
 
@@ -57,10 +58,10 @@ func (er *BSErr) Err(e error, skipTrace bool, msg ...string) bool {
 	if e != nil && !skipTrace {
 		log.DisableTimestamp()
 		errStack := er.findIssue()
-		flds := make([]log.Fields, 0)
+		flds := make([]types.Fields, 0)
 		for _, d := range errStack {
 			f := d.fname + ":" + strconv.Itoa(d.line)
-			fldsTmp := log.Fields{"Method": d.method, "File": f}
+			fldsTmp := types.Fields{"Method": d.method, "File": f}
 			flds = append(flds, fldsTmp)
 		}
 		entry := log.WithFields(flds)
@@ -97,10 +98,10 @@ func (er *BSErr) NotErrSkipTrace(e error, skipTrace bool, msg ...string) bool {
 
 		log.DisableTimestamp()
 		errStack := er.findIssue()
-		flds := make([]log.Fields, 0)
+		flds := make([]types.Fields, 0)
 		for _, d := range errStack {
 			f := d.fname + ":" + strconv.Itoa(d.line)
-			fldsTmp := log.Fields{"Method": d.method, "File": f}
+			fldsTmp := types.Fields{"Method": d.method, "File": f}
 			flds = append(flds, fldsTmp)
 		}
 		entry := log.WithFields(flds)
@@ -124,10 +125,10 @@ func (er *BSErr) StopErr(e error, msg ...string) {
 
 		log.DisableTimestamp()
 		errStack := er.findIssue()
-		flds := make([]log.Fields, 0)
+		flds := make([]types.Fields, 0)
 		for _, d := range errStack {
 			f := d.fname + ":" + strconv.Itoa(d.line)
-			fldsTmp := log.Fields{"Method": d.method, "File": f}
+			fldsTmp := types.Fields{"Method": d.method, "File": f}
 			flds = append(flds, fldsTmp)
 		}
 		entry := log.WithFields(flds)

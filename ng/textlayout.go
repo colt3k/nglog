@@ -3,17 +3,14 @@ package ng
 import (
 	"bytes"
 	"fmt"
-	"github.com/colt3k/nglogint"
-	"github.com/colt3k/nglogint/enum"
-	"github.com/colt3k/nglogint/types"
-
+	"github.com/colt3k/nglog"
+	"github.com/colt3k/nglog/enum"
+	"github.com/colt3k/nglog/internal/pkg/types"
+	"github.com/colt3k/nglog/internal/pkg/util"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"strconv"
-
-	"github.com/colt3k/nglog/internal/pkg/util"
 )
 
 var (
@@ -61,12 +58,12 @@ func (f *TextLayout) Description() string {
 	byt.WriteString("\nDisableTimestamp: " + strconv.FormatBool(f.DisableTimestamp))
 	return byt.String()
 }
-func (f *TextLayout) init(entry nglogint.Msg) {
+func (f *TextLayout) init(entry nglog.Msg) {
 	if entry.MsgLogger() != nil {
 		f.isTerminal = !NotTerminal
 	}
 }
-func (f *TextLayout) Format(entry nglogint.Msg, disableColor bool) ([]byte, error) {
+func (f *TextLayout) Format(entry nglog.Msg, disableColor bool) ([]byte, error) {
 	var b *bytes.Buffer
 
 	b = &bytes.Buffer{}
@@ -103,7 +100,7 @@ func (f *TextLayout) Format(entry nglogint.Msg, disableColor bool) ([]byte, erro
 	return b.Bytes(), nil
 }
 
-func (f *TextLayout) printColored(b *bytes.Buffer, entry nglogint.Msg, keys []types.Fields, timestampFormat string) {
+func (f *TextLayout) printColored(b *bytes.Buffer, entry nglog.Msg, keys []types.Fields, timestampFormat string) {
 	var levelColorOption string
 
 	switch entry.MsgLevel() {
