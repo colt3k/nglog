@@ -16,8 +16,10 @@ import (
 type Logger interface {
 	Flags() int
 	Level() enum.LogLevel
-	Logln(lvl enum.LogLevel, args ...interface{})
-	Logf(lvl enum.LogLevel, format string, args ...interface{})
+	// Logln lvl can be a string of one of the levels above or an enum value of the same
+	Logln(lvl interface{}, args ...interface{})
+	// Logf lvl can be a string of one of the levels above or an enum value of the same
+	Logf(lvl interface{}, format string, args ...interface{})
 	Print(args ...interface{})
 	Printf(format string, args ...interface{})
 	PrintTypeOfValue(arg interface{})

@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -370,131 +371,167 @@ func (l *StdLogger) SetFormatter(formatter nglog.Layout) {
 	l.Formatter = formatter
 }
 
-func (l *StdLogger) Logln(lvl enum.LogLevel, args ...interface{}) {
+func (l *StdLogger) Logln(lvl interface{}, args ...interface{}) {
+	var intLevel enum.LogLevel
+	switch lvl.(type) {
+	case string:
+		intLevel = getEnum(strings.ToLower(lvl.(string)))
+	case enum.LogLevel:
+		intLevel = lvl.(enum.LogLevel)
+	}
 
-	switch lvl {
+	switch intLevel {
 	case enum.NONE:
 		if l.level >= enum.NONE {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.FATAL:
 		if l.level >= enum.FATAL {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 			os.Exit(1)
 		}
 	case enum.FATALNOEXIT:
 		if l.level >= enum.FATALNOEXIT {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.ERROR:
 		if l.level >= enum.ERROR {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.WARN:
 		if l.level >= enum.WARN {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.INFO:
 		if l.level >= enum.INFO {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DEBUG:
 		if l.level >= enum.DEBUG {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DBGL2:
 		if l.level >= enum.DBGL2 {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DBGL3:
 		if l.level >= enum.DBGL3 {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, "", l.Caller(), true, args...)
+			entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 			l.releaseEntry(entry)
 		}
 	default:
 		entry := l.newEntry(false)
-		entry.LogEnt(lvl, "", l.Caller(), true, args...)
+		entry.LogEnt(intLevel, "", l.Caller(), true, args...)
 		l.releaseEntry(entry)
 	}
 }
 
-func (l *StdLogger) Logf(lvl enum.LogLevel, format string, args ...interface{}) {
-
+func getEnum(lvl string) enum.LogLevel {
 	switch lvl {
+	case "none":
+		return enum.NONE
+	case "fatal":
+		return enum.FATAL
+	case "error":
+		return enum.ERROR
+	case "warn":
+		return enum.WARN
+	case "info":
+		return enum.INFO
+	case "debug":
+		return enum.DEBUG
+	case "dbgl2":
+		return enum.DBGL2
+	case "dbgl3":
+		return enum.DBGL3
+	}
+	return enum.INFO
+}
+func (l *StdLogger) Logf(lvl interface{}, format string, args ...interface{}) {
+
+	var intLevel enum.LogLevel
+	switch lvl.(type) {
+	case string:
+		intLevel = getEnum(strings.ToLower(lvl.(string)))
+	case enum.LogLevel:
+		intLevel = lvl.(enum.LogLevel)
+	}
+
+	switch intLevel {
 	case enum.NONE:
 		if l.level >= enum.NONE {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.FATAL:
 		if l.level >= enum.FATAL {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.FATALNOEXIT:
 		if l.level >= enum.FATALNOEXIT {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.ERROR:
 		if l.level >= enum.ERROR {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.WARN:
 		if l.level >= enum.WARN {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.INFO:
 		if l.level >= enum.INFO {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DEBUG:
 		if l.level >= enum.DEBUG {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DBGL2:
 		if l.level >= enum.DBGL2 {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	case enum.DBGL3:
 		if l.level >= enum.DBGL3 {
 			entry := l.newEntry(false)
-			entry.LogEnt(lvl, format, l.Caller(), false, args...)
+			entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 			l.releaseEntry(entry)
 		}
 	default:
 		entry := l.newEntry(false)
-		entry.LogEnt(lvl, format, l.Caller(), false, args...)
+		entry.LogEnt(intLevel, format, l.Caller(), false, args...)
 		l.releaseEntry(entry)
 	}
 }
