@@ -4,31 +4,18 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/colt3k/nglog"
 	"github.com/colt3k/nglog/internal/pkg/types"
 	"strconv"
 )
 
-type keyXML string
 
-// FieldMap allows customization of the key names for default fields.
-type XMLParamMap map[keyXML]string
-type xmlMapEntry struct {
-	XMLName xml.Name
-	Value   string `xml:",chardata"`
-}
 // Default key names for the default fields
 const (
 	XMLParamMsg   = "msg"
 	XMLParamLevel = "level"
 	XMLParamTime  = "time"
 )
-
-func (f XMLParamMap) Find(key keyXML) string {
-	if k, ok := f[key]; ok {
-		return k
-	}
-	return string(key)
-}
 
 type XMLLayout struct {
 	// TimestampFormat sets the format used for marshaling timestamps.
@@ -37,7 +24,7 @@ type XMLLayout struct {
 	// DisableTimestamp allows disabling automatic timestamps in output
 	DisableTimestamp bool
 
-	ParamMap XMLParamMap
+	ParamMap types.XMLParamMap
 }
 
 func (f *XMLLayout) Description() string {
@@ -56,8 +43,8 @@ func (f *XMLLayout) DisableTimeStamp() {
 func (f *XMLLayout) EnableTimeStamp() {
 	f.DisableTimestamp = true
 }
-func (f *XMLLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
-	data := make(types.Fields, len(entry.Fields)+3)
+func (f *XMLLayout) Format(entry nglog.Msg, disableColor bool) ([]byte, error) {
+	data := make(types.Fields, len(entry.MsgFields())+3)
 
 	prefixFieldClashes(data)
 
@@ -67,42 +54,15 @@ func (f *XMLLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	}
 
 	if !f.DisableTimestamp {
-		data[f.ParamMap.Find(XMLParamTime)] = entry.Time.Format(timestampFormat)
+		data[f.ParamMap.Find(XMLParamTime)] = entry.MsgTime().Format(timestampFormat)
 	}
-	data[f.ParamMap.Find(XMLParamMsg)] = entry.Message
-	data[f.ParamMap.Find(XMLParamLevel)] = entry.Level.String()
+	data[f.ParamMap.Find(XMLParamMsg)] = entry.MessageStr()
+	data[f.ParamMap.Find(XMLParamLevel)] = entry.MsgLevel().String()
 
 	serialized, err := xml.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal fields to XML\n%+v", err)
+		return nil, fmt.Errorf("failed to marshal fields to XML\n %+v", err)
 	}
 	return append(serialized, '\n'), nil
-}
-
-type LayoutFields struct {
-	types.Fields
-}
-// StringMap marshals into XML.
-func (m LayoutFields) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	if len(m.Fields) == 0 {
-		return nil
-	}
-
-	err := e.EncodeToken(start)
-	if err != nil {
-		return err
-	}
-
-	for k, i := range m.Fields {
-		switch v := i.(type) {
-		case int:
-			e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: strconv.Itoa(v)})
-		case string:
-			e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: v})
-		default:
-			fmt.Println("unknown type")
-		}
-	}
-
-	return e.EncodeToken(start.End())
+	//return serialized, nil
 }

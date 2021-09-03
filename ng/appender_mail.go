@@ -20,9 +20,10 @@ type MailAppender struct {
 	smtpFrom     string
 	smtpTo       string
 	smtpSubject  string
+	ssl          bool
 }
 
-func NewMailAppender(filter, smtpServer, smtpUsername, smtpPass, smtpFrom, smtpTo, smtpSubject string, smtpPort int) (*MailAppender, error) {
+func NewMailAppender(filter, smtpServer, smtpUsername, smtpPass, smtpFrom, smtpTo, smtpSubject string, smtpPort int, ssl bool) (*MailAppender, error) {
 	if len(smtpServer) == 0 {
 		return nil, fmt.Errorf("smtp server required")
 	}
@@ -43,6 +44,7 @@ func NewMailAppender(filter, smtpServer, smtpUsername, smtpPass, smtpFrom, smtpT
 	t.smtpTo = smtpTo
 	t.smtpSubject = smtpSubject
 	t.disableColor = true
+	t.ssl = ssl
 	return t, nil
 }
 func (f *MailAppender) Name() string {
@@ -72,7 +74,7 @@ func (f *MailAppender) Process(msg []byte) {
 	m.SetBody("text/plain", string(msg))
 
 	d := mail.NewDialer(f.smtpServer, f.smtpPort, f.smtpUsername, f.smtpPassword)
-	if f.smtpPort != 25 {
+	if f.ssl {
 		d.StartTLSPolicy = mail.MandatoryStartTLS
 	} else {
 		d.SSL = false

@@ -11,8 +11,6 @@ func main() {
 	Server("localhost", "9090", "tcp")
 }
 
-
-
 //Server start tcp server
 func Server(host, port, contype string) {
 

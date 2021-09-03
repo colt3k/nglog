@@ -10,12 +10,14 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
 )
 
 const DefaultTimestampFormat = time.RFC3339
+var /* const */ isLetter = regexp.MustCompile(`^[a-zA-Z]+$`).MatchString
 
 var (
 	once  ResyncOnce
@@ -132,6 +134,104 @@ func (l *StdLogger) ColorERR() string {
 }
 func (l *StdLogger) ColorDEFAULT() string {
 	return l.ClrDEFAULT
+}
+
+// InitLevel change from default log level of INFO
+func InitLevel(level enum.LogLevel) {
+	ll := LogLevel(level)
+	ll(std)
+}
+// InitFile add File Appender using destination with default filter
+func InitFile(logFile string) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", false, enum.INFO, false, false, nil)
+}
+// InitFileAndLevel use File Appender using destination with default filter, set LogLevel
+func InitFileAndLevel(logFile string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", true, level, false, false, nil)
+}
+// InitFileAndLevelFormatter use File Appender using destination with default filter, set LogLevel and custom Layout
+func InitFileAndLevelFormatter(logFile string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", true, level, false, false, layout)
+}
+// InitFileFilterAndLevel use File Appender using destination with custom filter, set LogLevel
+func InitFileFilterAndLevel(logFile,filter string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, false, false, nil)
+}
+// InitFileFilterAndLevelFormatter use File Appender using destination with custom filter, set LogLevel and custom Layout
+func InitFileFilterAndLevelFormatter(logFile,filter string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, false, false, layout)
+}
+// InitFileFilterAndLevelFailover use File Appender using destination with custom filter, set LogLevel, default Console failover
+func InitFileFilterAndLevelFailover(logFile,filter string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, false, true, nil)
+}
+// InitFileFilterAndLevelFailoverFormatter use File Appender using destination with custom filter, set LogLevel, default Console failover and custom Layout
+func InitFileFilterAndLevelFailoverFormatter(logFile,filter string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, false, true, layout)
+}
+// InitRollingFile add RollingFile Appender using destination with default filter
+func InitRollingFile(logFile string) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", false, enum.INFO, true, false, nil)
+}
+// InitRollingFileAndLevel use RollingFile Appender using destination with default filter, set LogLevel
+func InitRollingFileAndLevel(logFile string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", true, level, true, false, nil)
+}
+// InitRollingFileAndLevelFormatter use RollingFile Appender using destination with default filter, set LogLevel and custom Layout
+func InitRollingFileAndLevelFormatter(logFile string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,"*", true, level, true, false, layout)
+}
+// InitRollingFileFilterAndLevel use RollingFile Appender using destination with custom filter, set LogLevel
+func InitRollingFileFilterAndLevel(logFile,filter string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, true, false, nil)
+}
+// InitRollingFileFilterAndLevelFormatter use RollingFile Appender using destination with custom filter, set LogLevel and custom Layout
+func InitRollingFileFilterAndLevelFormatter(logFile,filter string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter( logFile,filter, true, level, true, false, layout)
+}
+// InitRollingFileFilterAndLevelFailover use RollingFile Appender using destination with custom filter, set LogLevel, default Console failover
+func InitRollingFileFilterAndLevelFailover(logFile,filter string, level enum.LogLevel) {
+	initFileFilterAndLevelRollingFailoverFormatter(logFile,filter, true, level, true, true, nil)
+}
+// InitRollingFileFilterAndLevelFailoverFormatter use RollingFile Appender using destination with custom filter, set LogLevel, default Console failover and custom Layout
+func InitRollingFileFilterAndLevelFailoverFormatter(logFile,filter string, level enum.LogLevel, layout nglog.Layout) {
+	initFileFilterAndLevelRollingFailoverFormatter(logFile,filter, true, level, true, true, layout)
+}
+
+func initFileFilterAndLevelRollingFailoverFormatter(logFile,filter string, chgLevel bool, level enum.LogLevel, rolling, failover bool, layout nglog.Layout) {
+	var fa Appender
+	if rolling {
+		rfa, err := NewRollingFileAppenderWithTrigger(filter, logFile, "RollingFileAppender", -1, DefaultSizeTriggerPolicy())
+		if err != nil {
+			log.Printf("issue creating rolling file appender\n%+v\n", err)
+		}
+		fa = rfa
+	} else {
+		fileAp, err := NewFileAppender(filter, logFile, "FileAppender", 0)
+		if err != nil {
+			log.Printf("issue creating file appender\n%+v", err)
+		}
+		fa = fileAp
+	}
+	ca := NewConsoleAppender(filter)
+	var appenderLogOpt LogOption
+	if failover {
+		appendersCA := []Appender{ca}
+		foA := NewFailoverAppender(fa, appendersCA)
+		appenderLogOpt = Appenders(foA)
+	} else {
+		appenderLogOpt = Appenders(ca, fa)
+	}
+
+	appenderLogOpt(std)
+	if chgLevel {
+		ll := LogLevel(level)
+		ll(std)
+	}
+	if layout != nil {
+		fmtr := Formatter(layout)
+		fmtr(std)
+	}
 }
 
 func Modify(opts ...LogOption) {

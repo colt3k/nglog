@@ -94,7 +94,8 @@ func (f *HTTPAppender) Applicable(msg string) bool {
 
 func (f *HTTPAppender) Process(msg []byte) {
 	// Send via HTTP
-	resp, err := f.client.Fetch(f.method, f.url, f.auth, nil, bytes.NewBuffer(msg))
+	//fmt.Printf("sent: |%v|\n", strings.TrimSpace(string(msg)))
+	resp, err := f.client.Fetch(f.method, f.url, f.auth, nil, bytes.NewBuffer([]byte(strings.TrimSpace(string(msg)))))
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -107,7 +108,9 @@ func (f *HTTPAppender) Process(msg []byte) {
 	if err != nil {
 		fmt.Println("on " + f.url + " 500 unable to read response")
 	}
-	fmt.Println(string(body))
+	if len(body) > 0 {
+		fmt.Printf("response: |%v|", string(body))
+	}
 }
 
 func (c *Client) Fetch(method, url string, auth *Auth, header map[string]string, body io.Reader) (*http.Response, error) {
@@ -141,15 +144,15 @@ func (c *Client) Fetch(method, url string, auth *Auth, header map[string]string,
 		req.SetBasicAuth(string(auth.Username), string(auth.Password))
 	}
 	// Add any required headers.
-	for key, value := range header {
-		req.Header.Add(key, value)
+	for headerKey, value := range header {
+		req.Header.Add(headerKey, value)
 
-		if key == "Content-Length" {
+		if headerKey == "Content-Length" {
 			v, _ := strconv.ParseInt(value, 10, 64)
 			req.ContentLength = v
 		}
-		if key == "Content-Type" {
-			req.Header.Set(key, value)
+		if headerKey == "Content-Type" {
+			req.Header.Set(headerKey, value)
 		}
 	}
 

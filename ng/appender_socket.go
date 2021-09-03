@@ -66,7 +66,7 @@ func (f *SocketAppender) Process(msg []byte) {
 	}
 
 	if con != nil {
-		_, err = con.Write(msg)
+		_, err = con.Write([]byte(strings.TrimSpace(string(msg))))
 		if err != nil {
 			fmt.Printf("write to server %s failed\n%+v", address, err)
 			if con != nil {
@@ -83,5 +83,4 @@ func (f *SocketAppender) Process(msg []byte) {
 			}
 		}
 	}
-
 }

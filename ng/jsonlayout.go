@@ -56,17 +56,7 @@ func (f *JSONLayout) EnableTimeStamp() {
 }
 func (f *JSONLayout) Format(entry nglog.Msg, disableColor bool) ([]byte, error) {
 	data := make(types.Fields, len(entry.MsgFields())+3)
-	//@TODO uncomment and fix
-	//for k, v := range entry.Fields {
-	//	switch v := v.(type) {
-	//	case error:
-	//		// Otherwise errors are ignored by `encoding/json`
-	//		// https://github.com/sirupsen/logrus/issues/137
-	//		data[k] = v.Error()
-	//	default:
-	//		data[k] = v
-	//	}
-	//}
+
 	prefixFieldClashes(data)
 
 	timestampFormat := f.TimestampFormat
@@ -85,4 +75,5 @@ func (f *JSONLayout) Format(entry nglog.Msg, disableColor bool) ([]byte, error) 
 		return nil, fmt.Errorf("failed to marshal fields to JSON\n%+v", err)
 	}
 	return append(serialized, '\n'), nil
+	//return serialized, nil
 }
