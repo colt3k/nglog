@@ -250,29 +250,29 @@ func (c *Clr) unset() string {
 
 
 func Black(format string, a ...interface{}) string {
-	return CachedColor(FgBlack).Print(format)
+	return CachedColor(FgBlack).Printf(format, a ...)
 }
 func BrightBlack(format string, a ...interface{}) string {
-	return CachedColor(HiBlack).Print(format)
+	return CachedColor(HiBlack).Printf(format, a ...)
 }
 func Red(format string, a ...interface{}) string {
 	return CachedColor(FgRed).Printf(format, a...)
 }
 func Green(format string, a ...interface{}) string {
-	return CachedColor(FgGreen).Print(format)
+	return CachedColor(FgGreen).Printf(format, a ...)
 }
 func Yellow(format string, a ...interface{}) string {
-	return CachedColor(FgYellow).Print(format)
+	return CachedColor(FgYellow).Printf(format, a ...)
 }
 func Blue(format string, a ...interface{}) string {
-	return CachedColor(FgBlue).Print(format)
+	return CachedColor(FgBlue).Printf(format, a ...)
 }
 func Magenta(format string, a ...interface{}) string {
-	return CachedColor(FgMagenta).Print(format)
+	return CachedColor(FgMagenta).Printf(format, a ...)
 }
 func Cyan(format string, a ...interface{}) string {
-	return CachedColor(FgCyan).Print(format)
+	return CachedColor(FgCyan).Printf(format, a ...)
 }
 func White(format string, a ...interface{}) string {
-	return CachedColor(FgWhite).Print(format)
+	return CachedColor(FgWhite).Printf(format, a ...)
 }
