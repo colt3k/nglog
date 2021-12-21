@@ -17,22 +17,22 @@ import (
 
 var ignore = []string{"nglog/ng/logger.go"}
 
-func AppendKeyValue(b *bytes.Buffer, key string, value interface{}, quoteEmptyField bool) {
+func AppendKeyValue(b *bytes.Buffer, key string, value interface{}, quoteEmptyField, disableQuoting bool) {
 	if b.Len() > 0 {
 		b.WriteByte(' ')
 	}
 	b.WriteString(key)
 	b.WriteByte('=')
-	AppendValue(b, value, quoteEmptyField)
+	AppendValue(b, value, quoteEmptyField, disableQuoting)
 }
 
-func AppendValue(b *bytes.Buffer, value interface{}, quoteEmptyField bool) {
+func AppendValue(b *bytes.Buffer, value interface{}, quoteEmptyField, disableQuoting bool) {
 	stringVal, ok := value.(string)
 	if !ok {
 		stringVal = fmt.Sprint(value)
 	}
 
-	if !needsQuoting(stringVal, quoteEmptyField) {
+	if !needsQuoting(stringVal, quoteEmptyField) || disableQuoting {
 		b.WriteString(stringVal)
 	} else {
 		b.WriteString(fmt.Sprintf("%q", stringVal))

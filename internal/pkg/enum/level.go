@@ -22,6 +22,9 @@ var loglevel = [...]string{
 }
 
 func (l LogLevel) String() string {
+	if len(loglevel[l-1]) == 4 {
+		return loglevel[l-1] + " "
+	}
 	return loglevel[l-1]
 }
 

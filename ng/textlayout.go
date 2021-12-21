@@ -27,6 +27,8 @@ type Layout interface {
 	Colors(bool)
 	DisableTimeStamp()
 	EnableTimeStamp()
+	DisableTextQuoting()
+	EnableTextQuoting()
 }
 
 type TextLayout struct {
@@ -43,6 +45,7 @@ type TextLayout struct {
 	DisableSorting   bool
 	QuoteEmptyVal    bool
 	DisableTimestamp bool
+	DisableQuoting   bool
 	sync.Once
 }
 
@@ -53,7 +56,13 @@ func (f *TextLayout) DisableTimeStamp() {
 	f.DisableTimestamp = true
 }
 func (f *TextLayout) EnableTimeStamp() {
-	f.DisableTimestamp = true
+	f.DisableTimestamp = false
+}
+func (f *TextLayout) DisableTextQuoting() {
+	f.DisableQuoting = true
+}
+func (f *TextLayout) EnableTextQuoting() {
+	f.DisableQuoting = false
 }
 func (f *TextLayout) Description() string {
 	var byt bytes.Buffer
@@ -64,6 +73,7 @@ func (f *TextLayout) Description() string {
 	byt.WriteString("\nDisableSorting: " + strconv.FormatBool(f.DisableSorting))
 	byt.WriteString("\nQuoteEmptyVal: " + strconv.FormatBool(f.QuoteEmptyVal))
 	byt.WriteString("\nDisableTimestamp: " + strconv.FormatBool(f.DisableTimestamp))
+	byt.WriteString("\nDisableTextQuoting: " + strconv.FormatBool(f.DisableQuoting))
 	return byt.String()
 }
 func (f *TextLayout) init(entry *LogMsg) {
@@ -88,17 +98,21 @@ func (f *TextLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 		f.printColored(b, entry, entry.Fields, timestampFormat)
 	} else {
 		if !f.DisableTimestamp {
-			util.AppendKeyValue(b, "time", entry.Time.Format(timestampFormat), f.QuoteEmptyVal)
+			util.AppendKeyValue(b, "time", entry.Time.Format(timestampFormat), f.QuoteEmptyVal, f.DisableQuoting)
 		}
 		if entry.Level > enum.NONE {
-			util.AppendKeyValue(b, "level", entry.Level.String(), f.QuoteEmptyVal)
+			util.AppendKeyValue(b, "level", entry.Level.String(), f.QuoteEmptyVal, true)
 		}
 		if entry.Message != "" {
-			util.AppendKeyValue(b, "msg", entry.Message, f.QuoteEmptyVal)
+			if !f.DisableTimestamp && entry.Level > enum.NONE {
+				util.AppendKeyValue(b, "msg", entry.Message, f.QuoteEmptyVal, f.DisableQuoting)
+			} else {
+				util.AppendValue(b, entry.PlainMessage, f.QuoteEmptyVal, f.DisableQuoting)
+			}
 		}
 		for _, d := range entry.Fields {
 			for k, v := range d {
-				util.AppendKeyValue(b, k, v, f.QuoteEmptyVal)
+				util.AppendKeyValue(b, k, v, f.QuoteEmptyVal, f.DisableQuoting)
 			}
 		}
 
@@ -153,7 +167,7 @@ func (f *TextLayout) printColored(b *bytes.Buffer, entry *LogMsg, keys []Fields,
 	for _, d := range keys {
 		for k, v := range d {
 			fmt.Fprintf(b, " %s%s%s =", levelColorOption, k, CLRRESET)
-			util.AppendValue(b, v, f.QuoteEmptyVal)
+			util.AppendValue(b, v, f.QuoteEmptyVal, f.DisableQuoting)
 		}
 	}
 	//for _, k := range keys {

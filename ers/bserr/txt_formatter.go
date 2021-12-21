@@ -56,7 +56,7 @@ func (f *TextFormatter) DisableTimeStamp() {
 	f.DisableTimestamp = true
 }
 func (f *TextFormatter) EnableTimeStamp() {
-	f.DisableTimestamp = true
+	f.DisableTimestamp = false
 }
 
 // Format renders a single log entry

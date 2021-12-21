@@ -4,10 +4,17 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"regexp"
 	"sync"
 	"time"
 
 	"github.com/colt3k/nglog/internal/pkg/enum"
+)
+
+var (
+	clrStart = regexp.MustCompile(`\[..m`)
+	clrEnd   = regexp.MustCompile(`\[0m`)
+	clrTab   = regexp.MustCompile(`\t`)
 )
 
 // Fields type, used to pass to `WithFields`.
@@ -30,6 +37,8 @@ type LogMsg struct {
 	Level enum.LogLevel
 	//Message passed into logger
 	Message string
+	//PlainMessage no colors no returns at end of line, etc..
+	PlainMessage string
 	//Fields passed to template i.e. for JSON output
 	Fields []Fields
 	// Time entry was created
@@ -80,15 +89,45 @@ func (entry *LogMsg) Fatal(args ...interface{}) {
 }
 
 func (entry *LogMsg) LogEnt(level enum.LogLevel, format, caller string, rtn bool, args ...interface{}) {
+	entry.LogEntWithPlainText(level, format, caller, nil, rtn, args...)
+}
+func (entry *LogMsg) LogEntWithPlainText(level enum.LogLevel, format, caller string, plaintext *string, rtn bool, args ...interface{}) {
 	entry.caller = caller
 	//has format but doesn't perform a return
 	// https://golang.org/pkg/fmt/
 	if len(format) > 0 && !rtn {
-		entry.log(level, fmt.Sprint(fmt.Sprintf(format, args...)))
+		tmp := fmt.Sprint(fmt.Sprintf(format, args...))
+		if plaintext == nil || len(*plaintext) == 0 {
+			// Create a plaintext by removing colors
+			c1 := clrTab.ReplaceAllString(tmp, "")
+			s1 := clrStart.ReplaceAllString(c1, "")
+			entry.PlainMessage = clrEnd.ReplaceAllString(s1, "")
+		} else {
+			entry.PlainMessage = *plaintext
+		}
+		entry.log(level, tmp)
 	} else if len(format) == 0 && !rtn { // no format and no return
-		entry.log(level, fmt.Sprint(args...))
+		tmp := fmt.Sprint(args...)
+		if plaintext == nil || len(*plaintext) == 0 {
+			// Create a plaintext by removing colors
+			c1 := clrTab.ReplaceAllString(tmp, "")
+			s1 := clrStart.ReplaceAllString(c1, "")
+			entry.PlainMessage = clrEnd.ReplaceAllString(s1, "")
+		} else {
+			entry.PlainMessage = *plaintext
+		}
+		entry.log(level, tmp)
 	} else if len(format) == 0 && rtn { // no format and a return
-		entry.log(level, fmt.Sprint(entry.sprintlnn(args...)))
+		tmp := fmt.Sprint(entry.sprintlnn(args...))
+		if plaintext == nil || len(*plaintext) == 0 {
+			// Create a plaintext by removing colors
+			c1 := clrTab.ReplaceAllString(tmp, "")
+			s1 := clrStart.ReplaceAllString(c1, "")
+			entry.PlainMessage = clrEnd.ReplaceAllString(s1, "")
+		} else {
+			entry.PlainMessage = *plaintext
+		}
+		entry.log(level, tmp)
 	}
 
 	if level == enum.FATAL {
@@ -134,6 +173,14 @@ func (entry *LogMsg) write() {
 	entry.Logger.MU.Lock()
 	defer entry.Logger.MU.Unlock()
 	//Process to appenders HERE!!!
+	//o, _ := os.Stdout.Stat()
+	//if (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice {
+	//	// Terminal
+	//	fmt.Println("On Terminal -------------------")
+	//} else {
+	//	// Not Terminal
+	//	fmt.Println("NOT On Terminal -------------------")
+	//}
 	for _, d := range entry.Logger.appenders {
 		serialized, err := entry.Logger.Formatter.Format(entry, d.DisableColor())
 		if err != nil {

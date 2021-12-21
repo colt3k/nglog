@@ -15,6 +15,7 @@ type xmlMapEntry struct {
 	XMLName xml.Name
 	Value   string `xml:",chardata"`
 }
+
 // Default key names for the default fields
 const (
 	XMLParamMsg   = "msg"
@@ -35,6 +36,7 @@ type XMLLayout struct {
 
 	// DisableTimestamp allows disabling automatic timestamps in output
 	DisableTimestamp bool
+	DisableQuoting   bool
 
 	ParamMap XMLParamMap
 }
@@ -53,7 +55,13 @@ func (f *XMLLayout) DisableTimeStamp() {
 	f.DisableTimestamp = true
 }
 func (f *XMLLayout) EnableTimeStamp() {
-	f.DisableTimestamp = true
+	f.DisableTimestamp = false
+}
+func (f *XMLLayout) DisableTextQuoting() {
+	f.DisableQuoting = true
+}
+func (f *XMLLayout) EnableTextQuoting() {
+	f.DisableQuoting = false
 }
 func (f *XMLLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	data := make(Fields, len(entry.Fields)+3)

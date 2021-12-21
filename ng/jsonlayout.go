@@ -32,8 +32,8 @@ type JSONLayout struct {
 
 	// DisableTimestamp allows disabling automatic timestamps in output
 	DisableTimestamp bool
-
-	ParamMap ParamMap
+	DisableQuoting   bool
+	ParamMap         ParamMap
 }
 
 func (f *JSONLayout) Description() string {
@@ -50,7 +50,13 @@ func (f *JSONLayout) DisableTimeStamp() {
 	f.DisableTimestamp = true
 }
 func (f *JSONLayout) EnableTimeStamp() {
-	f.DisableTimestamp = true
+	f.DisableTimestamp = false
+}
+func (f *JSONLayout) DisableTextQuoting() {
+	f.DisableQuoting = true
+}
+func (f *JSONLayout) EnableTextQuoting() {
+	f.DisableQuoting = false
 }
 func (f *JSONLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	data := make(Fields, len(entry.Fields)+3)

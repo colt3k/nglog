@@ -13,20 +13,20 @@ import (
 	"github.com/colt3k/nglog/internal/pkg/util"
 )
 
-const DefaultTimestampFormat = time.RFC3339
+const DefaultTimestampFormat = "2006-01-02T15:04:05.00000Z07:00"
 
 var (
-	once  ResyncOnce
-	std   = NewLogger()
-	DBGL3 = enum.DBGL3
-	DBGL2 = enum.DBGL2
-	DEBUG = enum.DEBUG
-	FATAL = enum.FATAL
+	once    ResyncOnce
+	std     = NewLogger()
+	DBGL3   = enum.DBGL3
+	DBGL2   = enum.DBGL2
+	DEBUG   = enum.DEBUG
+	FATAL   = enum.FATAL
 	FATALNE = enum.FATALNOEXIT
-	ERROR = enum.ERROR
-	WARN  = enum.WARN
-	INFO  = enum.INFO
-	NONE  = enum.NONE
+	ERROR   = enum.ERROR
+	WARN    = enum.WARN
+	INFO    = enum.INFO
+	NONE    = enum.NONE
 )
 
 type StdLogger struct {
@@ -116,8 +116,8 @@ func Modify(opts ...LogOption) {
 	}
 }
 func ShowAppenders() []string {
-	appendrs := make([]string,0)
-	for _,j := range std.appenders {
+	appendrs := make([]string, 0)
+	for _, j := range std.appenders {
 		appendrs = append(appendrs, j.Name())
 	}
 	return appendrs
@@ -230,7 +230,13 @@ func DisableTimestamp() {
 	std.Formatter.DisableTimeStamp()
 }
 func EnableTimestamp() {
-	std.Formatter.DisableTimeStamp()
+	std.Formatter.EnableTimeStamp()
+}
+func DisableTextQuoting() {
+	std.Formatter.DisableTextQuoting()
+}
+func EnableTextQuoting() {
+	std.Formatter.EnableTextQuoting()
 }
 func SetFormatter(formatter Layout) {
 	std.SetFormatter(formatter)
@@ -242,13 +248,13 @@ func (l *StdLogger) ShowOptions() {
 	var buf bytes.Buffer
 	buf.WriteString(l.Formatter.Description())
 
-	buf.WriteString(l.ColorDEFAULT+" DefaultColor:")
-	buf.WriteString(l.ColorERR+" ErrorColor:")
-	buf.WriteString(l.ColorWARN+" WarnColor:")
-	buf.WriteString(l.ColorINFO+" InfoColor:")
-	buf.WriteString(l.ColorDEBUG+" DebugColor:")
-	buf.WriteString(l.ColorDEBUGL2+" DebugL2Color:")
-	buf.WriteString(l.ColorDEBUGL3+" DebugL3Color:")
+	buf.WriteString(l.ColorDEFAULT + " DefaultColor:")
+	buf.WriteString(l.ColorERR + " ErrorColor:")
+	buf.WriteString(l.ColorWARN + " WarnColor:")
+	buf.WriteString(l.ColorINFO + " InfoColor:")
+	buf.WriteString(l.ColorDEBUG + " DebugColor:")
+	buf.WriteString(l.ColorDEBUGL2 + " DebugL2Color:")
+	buf.WriteString(l.ColorDEBUGL3 + " DebugL3Color:")
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.DEBUG, "", l.Caller(), false, buf.String())
 	l.releaseEntry(entry)
@@ -279,17 +285,18 @@ func (l *StdLogger) PrintStructWithFieldNames(arg interface{}) {
 }
 func (l *StdLogger) PrintStructWithFieldNamesIndent(arg interface{}, indent bool) {
 	l.Formatter.DisableTimeStamp()
+	l.Formatter.DisableTextQuoting()
 	entry := l.newEntry(false)
 	var s []byte
+	pt, _ := json.Marshal(arg)
 	if indent {
 		s, _ = json.MarshalIndent(arg, "", "  ")
-	} else {
-		s, _ = json.Marshal(arg)
 	}
-
-	entry.LogEnt(enum.NONE, "%v", l.Caller(), false, string(s))
+	plainText := string(pt)
+	entry.LogEntWithPlainText(enum.NONE, "%v", l.Caller(), &plainText, false, string(s))
 	l.releaseEntry(entry)
 	l.Formatter.EnableTimeStamp()
+	l.Formatter.EnableTextQuoting()
 }
 func (l *StdLogger) PrintGoSyntaxOfValue(arg interface{}) {
 	entry := l.newEntry(false)
@@ -305,6 +312,10 @@ func (l *StdLogger) SetLevel(level enum.LogLevel) {
 	l.level = level
 }
 
+func stripColor(s string) string {
+	s1 := clrStart.ReplaceAllString(s, "")
+	return clrEnd.ReplaceAllString(s1, "")
+}
 func (l *StdLogger) Caller() string {
 	//_, function, _ := util.FindCaller(l.depth)
 	//log.Println("depth:", l.depth, "Function:", function)
