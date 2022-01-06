@@ -72,6 +72,17 @@ func ColorsOn() LogOption {
 		lgr.ColorDEBUGL3 = std.ColorDEFAULT
 	}
 }
+func ColorsOff() LogOption {
+	return func(lgr *StdLogger) {
+		lgr.ColorDEFAULT = ""
+		lgr.ColorERR = ""
+		lgr.ColorWARN = ""
+		lgr.ColorINFO = ""
+		lgr.ColorDEBUG = ""
+		lgr.ColorDEBUGL2 = ""
+		lgr.ColorDEBUGL3 = ""
+	}
+}
 
 func HiColorsOn() LogOption {
 	return func(lgr *StdLogger) {

@@ -15,19 +15,39 @@ import (
 	"github.com/colt3k/nglog/internal/pkg/util"
 	log "github.com/colt3k/nglog/ng"
 )
+
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 type Obj struct {
-	Name	string `json:"name"`
-	Value 	string `json:"value"`
-	Id 		int `json:"id"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	Id    int    `json:"id"`
 }
+
 func TestDump(t *testing.T) {
 	//o := Obj{Name: "fred", Value: "testxxx", Id: 90}
 	ca := log.NewConsoleAppender("*")
 	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOn(), log.Appenders(ca))
 }
+func TestColorOff(t *testing.T) {
+	ca := log.NewConsoleAppender("*")
+	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOff(), log.Appenders(ca))
+	var val = "HelloWorld"
+	var val2 = 0.456789
+	log.Println("---FIRST LINE---", val2, val)
+	log.Printf("Printf Test some text %s %v ", val, val2)
+	log.Printf("Printf Test some text %v %s ", val2, val)
+	log.Logf(log.INFO, "Logf Test some text %s %f", val, val2)
+	log.Logf(log.INFO, "Throw Error %v", errors.New("test1"))
 
+	log.Logln(log.DBGL3, "debug level 3 message")
+	log.Logln(log.DBGL2, "debug level 2 message")
+	log.Logln(log.DEBUG, "debug message")
+	log.Logln(log.ERROR, "error message")
+	log.Logln(log.INFO, "info message")
+	log.Logln(log.WARN, "warn message")
+	log.Logln(log.FATALNE, "fatal message")
+}
 func Test(t *testing.T) {
 
 	ca := log.NewConsoleAppender("*")
@@ -129,7 +149,7 @@ func TestJSON(t *testing.T) {
 
 func TestMail(t *testing.T) {
 	ca := log.NewConsoleAppender("*")
-	ma, err := log.NewMailAppender("*","my.mailserver.com","youruser","yourpass",
+	ma, err := log.NewMailAppender("*", "my.mailserver.com", "youruser", "yourpass",
 		"from@somewhere.com", "user@to.com", "Test message", 25)
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating mail appender\n%+v", err)
@@ -145,7 +165,7 @@ func TestHTTP(t *testing.T) {
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating http appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.JSONLayout)),log.Appenders(ca, ha))
+	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.JSONLayout)), log.Appenders(ca, ha))
 
 	log.Logln(log.DBGL3, "debug level 3 message")
 	log.Logln(log.DBGL2, "debug level 2 message")
@@ -162,7 +182,7 @@ func TestTCPSocket(t *testing.T) {
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating socket appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.JSONLayout)),log.Appenders(ca, ha))
+	log.Modify(log.LogLevel(log.DBGL3), log.Formatter(new(log.JSONLayout)), log.Appenders(ca, ha))
 
 	log.Logln(log.DBGL3, "debug level 3 message")
 	log.Logln(log.DBGL2, "debug level 2 message")
@@ -215,9 +235,10 @@ func TestErrStacks(t *testing.T) {
 }
 
 type TestType struct {
-	Name	string
-	Value	int
+	Name  string
+	Value int
 }
+
 func TestTypeOfValue(t *testing.T) {
 
 	ca := log.NewConsoleAppender("*")
