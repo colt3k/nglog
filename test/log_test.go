@@ -31,7 +31,13 @@ func TestDump(t *testing.T) {
 }
 func TestColorOff(t *testing.T) {
 	ca := log.NewConsoleAppender("*")
-	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOff(), log.Appenders(ca))
+	fa, err := log.NewFileAppender("*", filepath.Join(util.HomeFolder(), "test.log"), "FileAppender", 0)
+	if err != nil {
+		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
+	}
+	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOff(), log.Appenders(ca, fa))
+
+	log.ShowConfig()
 	var val = "HelloWorld"
 	var val2 = 0.456789
 	log.Println("---FIRST LINE---", val2, val)

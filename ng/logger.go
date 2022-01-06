@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"sync"
 	"time"
 
@@ -27,6 +28,8 @@ var (
 	WARN    = enum.WARN
 	INFO    = enum.INFO
 	NONE    = enum.NONE
+
+	clrEsc = regexp.MustCompile(``)
 )
 
 type StdLogger struct {
@@ -248,13 +251,14 @@ func (l *StdLogger) ShowOptions() {
 	var buf bytes.Buffer
 	buf.WriteString(l.Formatter.Description())
 
-	buf.WriteString(l.ColorDEFAULT + " DefaultColor:")
-	buf.WriteString(l.ColorERR + " ErrorColor:")
-	buf.WriteString(l.ColorWARN + " WarnColor:")
-	buf.WriteString(l.ColorINFO + " InfoColor:")
-	buf.WriteString(l.ColorDEBUG + " DebugColor:")
-	buf.WriteString(l.ColorDEBUGL2 + " DebugL2Color:")
-	buf.WriteString(l.ColorDEBUGL3 + " DebugL3Color:")
+	buf.WriteString("\nExample Colors:\n")
+	buf.WriteString(l.ColorDEFAULT + " DefaultColor: " + clrEsc.ReplaceAllString(l.ColorDEFAULT, "") + "\n")
+	buf.WriteString(l.ColorERR + " ErrorColor: " + clrEsc.ReplaceAllString(l.ColorERR, "") + "\n")
+	buf.WriteString(l.ColorWARN + " WarnColor: " + clrEsc.ReplaceAllString(l.ColorWARN, "") + "\n")
+	buf.WriteString(l.ColorINFO + " InfoColor: " + clrEsc.ReplaceAllString(l.ColorINFO, "") + "\n")
+	buf.WriteString(l.ColorDEBUG + " DebugColor: " + clrEsc.ReplaceAllString(l.ColorDEBUG, "") + "\n")
+	buf.WriteString(l.ColorDEBUGL2 + " DebugL2Color: " + clrEsc.ReplaceAllString(l.ColorDEBUGL2, "") + "\n")
+	buf.WriteString(l.ColorDEBUGL3 + " DebugL3Color: " + clrEsc.ReplaceAllString(l.ColorDEBUGL3, "") + "\n")
 	entry := l.newEntry(false)
 	entry.LogEnt(enum.DEBUG, "", l.Caller(), false, buf.String())
 	l.releaseEntry(entry)
