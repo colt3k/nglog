@@ -89,7 +89,9 @@ func (f *TextLayout) Format(entry *LogMsg, disableColor bool) ([]byte, error) {
 	f.Do(func() { f.init(entry) })
 
 	isColored := (f.ForceColor || f.isTerminal) && !f.DisableColors && !disableColor
-
+	if isColored && f.DisableColors {
+		isColored = false
+	}
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
 		timestampFormat = DefaultTimestampFormat
@@ -158,7 +160,7 @@ func (f *TextLayout) printColored(b *bytes.Buffer, entry *LogMsg, keys []Fields,
 		}
 	} else {
 		if len(strings.TrimSpace(levelText)) > 0 {
-			fmt.Fprintf(b, "%s%s%s [%s] %-44s ", levelColorOption, levelText, CLRRESET, entry.Time.Format(timestampFormat), entry.Message)
+			fmt.Fprintf(b, "[%s] %s%s%s %-44s ", entry.Time.Format(timestampFormat), levelColorOption, levelText, CLRRESET, entry.Message)
 		} else {
 			fmt.Fprintf(b, "[%s] %-44s ", entry.Time.Format(timestampFormat), entry.Message)
 		}

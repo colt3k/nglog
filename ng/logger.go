@@ -235,6 +235,12 @@ func DisableTimestamp() {
 func EnableTimestamp() {
 	std.Formatter.EnableTimeStamp()
 }
+func DisableColor() {
+	std.Formatter.Colors(true)
+}
+func EnableColor() {
+	std.Formatter.Colors(false)
+}
 func DisableTextQuoting() {
 	std.Formatter.DisableTextQuoting()
 }

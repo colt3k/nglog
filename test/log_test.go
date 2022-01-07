@@ -35,8 +35,9 @@ func TestColorOff(t *testing.T) {
 	if err != nil {
 		log.Logf(log.FATAL, "issue creating file appender\n%+v", err)
 	}
-	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOff(), log.Appenders(ca, fa))
+	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOn(), log.Appenders(ca, fa))
 
+	log.DisableColor()
 	log.ShowConfig()
 	var val = "HelloWorld"
 	var val2 = 0.456789
