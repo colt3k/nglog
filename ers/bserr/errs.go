@@ -1,6 +1,9 @@
 package bserr
 
 import (
+	"bytes"
+	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -33,6 +36,9 @@ func NewErr() ers.Error {
 func Err(e error, msg ...string) bool {
 	return stders.Err(e, false, msg...)
 }
+func Error(e error, testMode bool, msg ...string) error {
+	return stders.ErrFullStack(e, testMode, msg...)
+}
 func ErrSkipTrace(e error, msg ...string) bool {
 	return stders.Err(e, true, msg...)
 }
@@ -50,6 +56,34 @@ func StopErr(e error, msg ...string) {
 }
 func WarnErr(e error, msg ...string) bool {
 	return stders.WarnErr(e, msg...)
+}
+
+func (er *BSErr) ErrFullStack(e error, test bool, msg ...string) error {
+	var buf bytes.Buffer
+	//log.DisableTimestamp()
+	if test {
+		buf.WriteString("** test mode ** " + e.Error())
+	} else {
+		buf.WriteString(e.Error())
+	}
+	errStack := er.findIssue()
+	for _, d := range errStack {
+		buf.WriteString("\n\t")
+		fname := d.fname
+		if !test {
+			//Strip off path except last part and file name
+			tmp := strings.Split(d.fname, string(filepath.Separator))
+			f2 := tmp[len(tmp)-2:]
+			fname = strings.Join(f2, string(filepath.Separator))
+		}
+		buf.WriteString("[" + fname + ":" + strconv.Itoa(d.line) + "]")
+	}
+	if len(msg) > 0 {
+		return fmt.Errorf("%v\n%v", msg[0], buf.String())
+	} else {
+		return fmt.Errorf("%v", buf.String())
+	}
+	//log.EnableTimestamp()
 }
 
 //Err check for error and output message if one is passed in

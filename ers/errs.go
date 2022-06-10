@@ -13,6 +13,7 @@ var (
 
 type Error interface {
 	Err(e error, skipTrace bool, msg ...string) bool
+	ErrFullStack(e error, skipTrace bool, msg ...string) error
 	NoPrintErr(e error) bool
 	NotErr(e error, msg ...string) bool
 	NotErrSkipTrace(e error, skipTrace bool, msg ...string) bool
