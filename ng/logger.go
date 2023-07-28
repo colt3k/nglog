@@ -61,6 +61,7 @@ func NewLogger(opts ...LogOption) *StdLogger {
 	var t *StdLogger
 
 	once.Do(func() {
+		//fmt.Println("!! INIT LOGGER IN ONCE !!")
 		t = new(StdLogger)
 		t.Now = time.Now() // sets when first created
 		t.Formatter = &TextLayout{ForceColor: true}
@@ -114,6 +115,7 @@ func (l *StdLogger) releaseEntry(entry *LogMsg) {
 }
 
 func Modify(opts ...LogOption) {
+	//fmt.Println("!! MODIFY LOGGER !!")
 	for _, opt := range opts {
 		opt(std)
 	}
@@ -351,7 +353,8 @@ func (l *StdLogger) WithFields(fields []Fields) *LogMsg {
 	return entry.WithFields(fields)
 }
 
-/**
+/*
+*
 SetFlags
 Ldate         = 1 << iota     // the date in the local time zone: 2009/01/23
 Ltime                         // the time in the local time zone: 01:23:23

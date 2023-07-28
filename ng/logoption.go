@@ -12,6 +12,7 @@ type LogOption func(h *StdLogger)
 // Logger returns a MDHashOption that sets the logger for the hash.
 func LogLevel(l enum.LogLevel) LogOption {
 	return func(lgr *StdLogger) {
+		//fmt.Printf(" -- NOTE: Log Level Set To %v\n", l.String())
 		lgr.level = l
 	}
 }
