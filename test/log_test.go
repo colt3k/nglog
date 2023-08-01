@@ -28,6 +28,13 @@ func TestDump(t *testing.T) {
 	//o := Obj{Name: "fred", Value: "testxxx", Id: 90}
 	ca := log.NewConsoleAppender("*")
 	log.Modify(log.LogLevel(log.DBGL3), log.ColorsOn(), log.Appenders(ca))
+	log.Logln(log.INFO, "Logln Test with color")
+	log.Logln(log.DBGL3, "debug level 3 message")
+	log.Logln(log.DBGL2, "debug level 2 message")
+	log.Logln(log.DEBUG, "debug message")
+	log.Logln(log.ERROR, "error message")
+	log.Logln(log.INFO, "info message")
+	log.Logln(log.WARN, "warn message")
 }
 func TestColorOff(t *testing.T) {
 	ca := log.NewConsoleAppender("*")
