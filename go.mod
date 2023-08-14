@@ -3,7 +3,7 @@ module github.com/colt3k/nglog
 go 1.13
 
 require (
-	github.com/colt3k/utils/archive v0.0.8
+	github.com/colt3k/utils/archive v0.0.9
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/mattn/go-isatty v0.0.19
 	github.com/pkg/errors v0.9.1
