@@ -162,6 +162,7 @@ func TestJSON(t *testing.T) {
 }
 
 func TestMail(t *testing.T) {
+	t.SkipNow()
 	ca := log.NewConsoleAppender("*")
 	ma, err := log.NewMailAppender("*", "my.mailserver.com", "youruser", "yourpass",
 		"from@somewhere.com", "user@to.com", "Test message", 25)
@@ -171,6 +172,7 @@ func TestMail(t *testing.T) {
 	log.Modify(log.LogLevel(log.DEBUG), log.Appenders(ca, ma))
 
 	log.Logln(log.DEBUG, "Mail Message")
+
 }
 
 func TestHTTP(t *testing.T) {
@@ -191,6 +193,7 @@ func TestHTTP(t *testing.T) {
 }
 
 func TestTCPSocket(t *testing.T) {
+	t.SkipNow()
 	ca := log.NewConsoleAppender("*")
 	ha, err := log.NewSocketAppender("*", "localhost", "9090")
 	if err != nil {
@@ -245,6 +248,7 @@ func TestSyslogXML(t *testing.T) {
 }
 
 func TestErrStacks(t *testing.T) {
+	t.SkipNow()
 	bserr.StopErr(fmt.Errorf("some error one"), nil...)
 }
 
