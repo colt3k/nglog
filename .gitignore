@@ -2,3 +2,4 @@ test/logtest/
 test/myfile.log
 test/output.txt
 TODO.md
+vendor/
