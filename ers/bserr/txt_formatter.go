@@ -3,6 +3,7 @@ package bserr
 import (
 	"bytes"
 	"fmt"
+	"github.com/mattn/go-isatty"
 	"io"
 	"os"
 	"sort"
@@ -10,8 +11,6 @@ import (
 	"time"
 
 	"github.com/colt3k/nglog/internal/pkg/enum"
-
-	"golang.org/x/crypto/ssh/terminal"
 
 	log "github.com/colt3k/nglog/ng"
 )
@@ -228,7 +227,8 @@ func NeedsQuoting(text string) bool {
 func checkIfTerminal(w io.Writer) bool {
 	switch v := w.(type) {
 	case *os.File:
-		return terminal.IsTerminal(int(v.Fd()))
+		// return terminal.IsTerminal(int(v.Fd()))
+		return isatty.IsTerminal(v.Fd())
 	default:
 		return false
 	}

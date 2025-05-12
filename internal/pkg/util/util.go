@@ -3,14 +3,13 @@ package util
 import (
 	"bytes"
 	"fmt"
+	"github.com/mattn/go-isatty"
 	"io"
 	"log"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
-
-	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/colt3k/nglog/ers"
 )
@@ -77,7 +76,8 @@ func (mw *MutexWrap) Disable() {
 func CheckIfTerminal(w io.Writer) bool {
 	switch v := w.(type) {
 	case *os.File:
-		return terminal.IsTerminal(int(v.Fd()))
+		// return terminal.IsTerminal(int(v.Fd()))
+		return isatty.IsTerminal(v.Fd())
 	default:
 		return false
 	}
@@ -97,7 +97,7 @@ func FindIssue(startLevel int) (string, string, int) {
 		if !found {
 			break
 		}
-		//log.Logf(log.DEBUG, "Level: %d File: %s", level, fname)
+		// log.Logf(log.DEBUG, "Level: %d File: %s", level, fname)
 		found = false
 		for _, d := range ignore {
 			if strings.HasSuffix(fname, d) {
